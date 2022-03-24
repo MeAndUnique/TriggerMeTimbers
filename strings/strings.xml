@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<root>
+	<string name="triggers_window_title">Triggers</string>
+
+	<string name="before_damage_taken_event">Before Damage Taken</string>
+
+	<string name="is_source_condition">Is Source</string>
+	<string name="is_target_condition">Is Target</string>
+	<string name="target_has_current_hit_points_condition">Target Has Current Hit Points</string>
+	<string name="source_has_effect_condition">Source Has Effect</string>
+	<string name="target_has_effect_condition">Target Has Effect</string>
+
+	<string name="equal_comparison">=</string>
+	<string name="not_equal_comparison">≠</string>
+	<string name="greater_than_comparison">&gt;</string>
+	<string name="greater_than_equal_comparison">≥</string>
+	<string name="less_than_comparison">&lt;</string>
+	<string name="less_than_equal_comparison">≤</string>
+
+	<string name="ensure_target_has_remaining_hit_points_action">Ensure Target Has Remaining Hit Points</string>
+	<string name="remove_effect_from_source_action">Remove Effect From Source</string>
+	<string name="remove_effect_from_target_action">Remove Effect From Target</string>
+</root>

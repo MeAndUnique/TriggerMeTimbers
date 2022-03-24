@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<root>
+	<windowclass name="triggers">
+		<frame>utilitybox3</frame>
+		<placement>
+			<size width="450" height="450" />
+		</placement>
+		<sizelimits>
+			<minimum width="450" height="450" />
+			<dynamic />
+		</sizelimits>
+		<minimize>minimized_reference</minimize>
+		<softclose />
+		<nodelete />
+	</windowclass>
+		<sheetdata>
+			<windowtitlebar name="title">
+				<resource>triggers_window_title</resource>
+			</windowtitlebar>
+			<anchor_title_utilitybox3 name="contentanchor" />
+			<anchor_bottom_utilitybox3 name="bottomanchor" />
+			<genericcontrol name="listbottomanchor">
+				<anchored height="0">
+					<left offset="10" />
+					<right offset="-10" />
+					<bottom offset="-55" />
+				</anchored>
+			</genericcontrol>
+			<genericcontrol name="pageanchor">
+				<anchored to="contentanchor" height="24">
+					<left offset="10" />
+					<right offset="-10" />
+					<bottom parent="listbottomanchor" anchor="top" relation="relative" offset="-5" />
+				</anchored>
+			</genericcontrol>
+
+			<hsc name="filter_category" />
+			<masterindex_category_label name="label_category" />
+			<masterindex_category_filter_label name="filter_category_label" />
+			<masterindex_category_list name="list_category" />
+			<masterindex_category_scroll name="scroll_category" />
+			<masterindex_category_detail name="button_category_detail" />
+			<masterindex_category_iedit name="button_category_iedit" />
+			<masterindex_category_iadd name="button_category_iadd" />
+
+			<windowlist name="list">
+				<anchored to="contentanchor">
+					<top anchor="bottom" relation="relative" offset="20" />
+					<left />
+					<right />
+					<bottom parent="bottomanchor" anchor="top" relation="relative" offset="-70" />
+				</anchored>
+				<frame name="groupbox" offset="15,15,20,15" />
+				<child></child>
+				<child><backcolor>1A40301E</backcolor></child>
+				<class>triggerlist_item</class>
+				<allowdelete />
+				<useallmodules />
+				<skipempty />
+				<!-- TODO <script file="campaign/scripts/masterindex_list.lua" /> -->
+			</windowlist>
+
+			<list_page_info />
+			<list_page_start />
+			<list_page_prev />
+			<list_page_next />
+			<list_page_end />
+
+			<anchor_utility_controls />
+			<button_iedit_utility />
+			<button_iadd_utility />
+			<filter_utility />
+			
+			<resize_utilitybox3 />
+			<!-- TODO <helper_effects /> -->
+			<close_utilitybox3 />
+		</sheetdata>
+	</windowclass>
+
+	<windowclass name="triggerlist_item">
+	</windowclass>
+</root>
