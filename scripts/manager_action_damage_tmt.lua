@@ -20,10 +20,15 @@ rBeforeDamageTakenEvent = {
 	aParameters = {"rSource", "rTarget", "nDamage", "nWounds", "nHitpoints"}
 };
 
+-- TODO damage value comparison
+		-- rolls in general? if so roll type needed
+		--		geenral roll here confounded by resitances
+-- TODO support for configurable parameters that depend on event params
+--		damage exceeds wounds is primary use case here
+--			which would need secondary configurable for type of comparison
+
 rTargetHasCurrentHitPointsCondition = nil;
  -- TODO relocate
-rIsSourceCondition = nil;
-rIsTargetCondition = nil;
 
 rEnsureRemainingHitpointsAction = nil;
 
@@ -37,62 +42,56 @@ function onInit()
 	messageDamageOriginal = ActionDamage.messageDamage;
 	ActionDamage.messageDamage = messageDamage;
 
-	-- TODO finish defining.
-	TriggerManager.defineEvent({sName="Damage"});
 	TriggerManager.defineEvent(rBeforeDamageTakenEvent);
 
 	initializeConditions();
 	intializeActions();
 
-	TriggerManager.defineCondition({
-		aEvents = {"Damage"},
-		fCondition = targetHadInitialHitpoints,
-		sName = "Target Had Initial Hit Points"
-	});
-
-	-- TODO remove debug code
-	TriggerManager.defineAction({
-		fAction = messageSuccess,
-		sName = "Message Success"
-	})
 	Interface.onDesktopInit = onDesktopInit;
 end
 
 function onDesktopInit()
 	-- TODO remove debug code
-	TriggerManager.registerTrigger({
-		tEvents={
-			[rBeforeDamageTakenEvent.sName]={
-				aConditions={
-					{
-						sName = rTargetHasCurrentHitPointsCondition.sName,
-						rData = {sComparison="gt", nCompareAgainst=0},
-					},
-					{
-						sName = EffectManagerTMT.rTargetHasEffectCondition.sName,
-						rData = {sEffectName = "Death Ward"},
-					}
-				}
-			}
-		},
-		aActions={
-			{
-				sName = rEnsureRemainingHitpointsAction.sName,
-				rData = {nMinimum = 1, sMessage = "[DEATH WARD]"}
-			},
-			{
-				sName = EffectManagerTMT.rRemoveTargetEffectAction.sName,
-				rData = {sEffectName = "Death Ward"}
-			},
-		}
-	});
+	-- TriggerManager.registerTrigger({
+	-- 	tEvents={
+	-- 		[rBeforeDamageTakenEvent.sName]={
+	-- 			aConditions={
+	-- 				{
+	-- 					sName = rTargetHasCurrentHitPointsCondition.sName,
+	-- 					rData = {sComparison="gt", nCompareAgainst=0},
+	-- 				},
+	-- 				{
+	-- 					sName = EffectManagerTMT.rTargetHasEffectCondition.sName,
+	-- 					rData = {sEffectName = "Death Ward"},
+	-- 				}
+	-- 			}
+	-- 		}
+	-- 	},
+	-- 	aActions={
+	-- 		{
+	-- 			sName = rEnsureRemainingHitpointsAction.sName,
+	-- 			rData = {nMinimum = 1, sMessage = "[DEATH WARD]"}
+	-- 		},
+	-- 		{
+	-- 			sName = EffectManagerTMT.rRemoveTargetEffectAction.sName,
+	-- 			rData = {sEffectName = "Death Ward"}
+	-- 		},
+	-- 	}
+	-- });
 end
 
 function initializeConditions()
 	rTargetHasCurrentHitPointsCondition = {
 		sName = "target_has_current_hit_points_condition",
 		fCondition = targetHasCurrentHitpoints,
-		aRequiredParameters = {"rTarget"}
+		aRequiredParameters = {"rTarget"},
+		tConfigurableParameters = {
+			["nCompareAgainst"] = {
+				sName = "value_parameter",
+				sType = "number",
+			},
+			["sComparison"] = TriggerManager.rComparisonParameter,
+		},
 	};
 
 	TriggerManager.defineCondition(rTargetHasCurrentHitPointsCondition);
@@ -102,7 +101,17 @@ function intializeActions()
 	rEnsureRemainingHitpointsAction = {
 		sName = "ensure_target_has_remaining_hit_points_action",
 		fAction = ensureRemainingHitpoints,
-		aRequiredParameters = {"nDamage", "nWounds", "nHitpoints"}
+		aRequiredParameters = {"nDamage", "nWounds", "nHitpoints"},
+		tConfigurableParameters = {
+			["nMinimum"] = {
+				sName = "minimum_parameter",
+				sType = "number",
+			},
+			["sMessage"] = {
+				sName = "chat_message_parameter",
+				sType = "string",
+			},
+		},
 	};
 
 	TriggerManager.defineAction(rEnsureRemainingHitpointsAction);
@@ -118,7 +127,6 @@ function mathMax(adjustedWounds, zero)
 	local rEventData = {rSource=rActiveSource, rTarget=rActiveTarget, nDamage=nDamage, nWounds=nWounds, nHitpoints=nTotal};
 	TriggerManager.fireEvent(rBeforeDamageTakenEvent.sName, rEventData);
 
-	Debug.chat("mathMax", rEventData)
 	return math.max(nWounds - rEventData.nDamage, zero);
 end
 
@@ -175,24 +183,7 @@ function targetHasCurrentHitpoints(rTriggerData, rEventData)
 	end
 
 	local nCurrent = getCurrentHitPoints(rEventData.rTarget);
-	Debug.chat("targetHasCurrentHitpoints", rTriggerData, rEventData, nCurrent)
-	return resolveComparison(nCurrent, rTriggerData.nCompareAgainst, rTriggerData.sComparison);
-end
-
-function resolveComparison(vLeft, vRight, sComparison)
-	if sComparison == "not_equal_comparison" then
-		return vLeft ~= vRight;
-	elseif sComparison == "greater_than_comparison" then
-		return vLeft > vRight;
-	elseif sComparison == "greater_than_equal_comparison" then
-		return vLeft >= vRight;
-	elseif sComparison == "less_than_comparison" then
-		return vLeft < vRight;
-	elseif sComparison == "less_than_equal_comparison" then
-		return vLeft <= vRight;
-	else
-		return vLeft == vRight;
-	end
+	return TriggerManager.resolveComparison(nCurrent, rTriggerData.nCompareAgainst, rTriggerData.sComparison);
 end
 
 function getCurrentHitPoints(rActor)
@@ -242,6 +233,8 @@ function getWounds(rActor, sType, nodeActor)
 end
 
 function ensureRemainingHitpoints(rTriggerData, rEventData)
+	-- TODO what to do about damage sharing?
+	-- 		might just work regardless
 	local nCurrent = rEventData.nHitpoints - rEventData.nWounds;
 	local nInitialDamage = rEventData.nDamage;
 	rEventData.nDamage = math.max(rEventData.nDamage, rTriggerData.nMinimum - nCurrent);
@@ -249,10 +242,4 @@ function ensureRemainingHitpoints(rTriggerData, rEventData)
 	if nInitialDamage ~= rEventData.nDamage then
 		table.insert(rDamageOutput.tNotifications, rTriggerData.sMessage);
 	end
-end
-
-function messageSuccess(rTriggerData, rEventData)
-	Debug.chat("success");
-	bStop = true;
-	applyDamage(rEventData.rTarget, rEventData.rTarget, false, "Death Ward", -1)
 end

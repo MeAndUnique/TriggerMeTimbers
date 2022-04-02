@@ -34,9 +34,16 @@ SOFTWARE.
 	</properties>
 
 	<base>
-		<script name="ActionDamageTMT" file="scripts/manager_action_damage_tmt.lua" />
+		<script name="ActionDamageTMT" file="scripts/manager_action_damage_tmt.lua" /> <!-- TODO 5e-only -->
+		<script name="DesktopManagerTMT" file="scripts/manager_desktop_tmt.lua" />
 		<script name="EffectManagerTMT" file="scripts/manager_effect_tmt.lua" />
+		<script name="LibraryDataTMT" file="scripts/data_library_tmt.lua" />
 		<script name="TriggerManager" file="scripts/manager_trigger.lua" />
+
+		<includefile source="strings/strings.xml" />
+		<includefile source="triggers/triggers.xml" />
+
+		<!-- TODO trigger sidebar icon -->
 	</base>
 
 	<announcement text="Trigger Me Timbers dev_version by MeAndUnique." font="emotefont" />

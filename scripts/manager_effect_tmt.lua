@@ -18,12 +18,24 @@ function initializeConditions()
 	rSourceHasEffectCondition = {
 		sName = "source_has_effect_condition",
 		fCondition = sourceHasEffectCondition,
-		aRequiredParameters = {"rSource"}
+		aRequiredParameters = {"rSource"},
+		tConfigurableParameters = {
+			["sEffectName"] = {
+				sName = "effect_name_parameter",
+				sType = "string"
+			},
+		},
 	};
 	rTargetHasEffectCondition = {
 		sName = "target_has_effect_condition",
 		fCondition = targetHasEffectCondition,
-		aRequiredParameters = {"rTarget"}
+		aRequiredParameters = {"rTarget"},
+		tConfigurableParameters = {
+			["sEffectName"] = {
+				sName = "effect_name_parameter",
+				sType = "string"
+			},
+		},
 	};
 
 	TriggerManager.defineCondition(rSourceHasEffectCondition);
@@ -34,12 +46,24 @@ function initializeActions()
 	rRemoveSourceEffectAction = {
 		sName = "remove_effect_from_source_action",
 		fAction = removeSourceEffect,
-		aRequiredParameters = {"rSource"}
+		aRequiredParameters = {"rSource"},
+		tConfigurableParameters = {
+			["sEffectName"] = {
+				sName = "effect_name_parameter",
+				sType = "string"
+			},
+		},
 	};
 	rRemoveTargetEffectAction = {
 		sName = "remove_effect_from_target_action",
 		fAction = removeTargetEffect,
-		aRequiredParameters = {"rTarget"}
+		aRequiredParameters = {"rTarget"},
+		tConfigurableParameters = {
+			["sEffectName"] = {
+				sName = "effect_name_parameter",
+				sType = "string"
+			},
+		},
 	};
 
 	TriggerManager.defineAction(rRemoveSourceEffectAction);

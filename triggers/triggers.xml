@@ -13,7 +13,6 @@
 		<minimize>minimized_reference</minimize>
 		<softclose />
 		<nodelete />
-	</windowclass>
 		<sheetdata>
 			<windowtitlebar name="title">
 				<resource>triggers_window_title</resource>
@@ -79,5 +78,286 @@
 	</windowclass>
 
 	<windowclass name="triggerlist_item">
+		<margins control="0,0,0,2" />
+		<sheetdata>
+			<masterindexitem_link name="link" />
+
+			<masterindexitem_anchor_right name="rightanchor" />
+			<masterindexitem_idelete name="idelete" />
+			<masterindexitem_access name="access" />
+			<masterindexitem_category name="category" />
+			
+			<masterindexitem_name name="name" />
+		</sheetdata>
 	</windowclass>
+
+	<!-- TODO relocate -->
+	<windowclass name="trigger">
+		<frame>recordsheet</frame>
+		<placement>
+			<size width="460" height="550" />
+		</placement>
+		<sizelimits>
+			<minimum width="460" height="400" />
+			<dynamic />
+		</sizelimits>
+		<tooltip field="name" />
+		<gmexport>trigger</gmexport>
+		<sheetdata>
+			<sub_record_header name="header">
+				<class>trigger_header</class>
+			</sub_record_header>
+
+			<frame_record_content name="contentframe" />
+
+			<subwindow_record name="content">
+				<class>trigger_content</class>
+				<activate />
+			</subwindow_record>
+			<scrollbar_record>
+				<target>content</target>
+			</scrollbar_record>
+
+			<resize_recordsheet />
+			<close_recordsheet />
+		</sheetdata>
+	</windowclass>
+
+	<windowclass name="trigger_header">
+		<margins control="0,0,0,2" />
+		<script file="common/scripts/record_header.lua" />
+		<sheetdata>
+			<link_record_header name="link" />
+
+			<anchor_record_header_right />
+			<icon_record_locked />
+			<button_record_locked />
+
+			<string_record_name name="name" />
+			<label_recordtype name="recordtype_label" />
+		</sheetdata>
+	</windowclass>
+
+	<windowclass name="trigger_content">
+		<margins control="0,0,0,2" />
+		<script file="triggers/scripts/trigger_content.lua" />
+		<sheetdata>
+			<anchor_column name="columnanchor" />
+
+			<header_column name="header_events">
+				<static textres="trigger_header_events" />
+			</header_column>
+			<button_iedit name="events_iedit">
+				<anchored to="header_events" position="righthigh" offset="-20,0" />
+				<target>events</target>
+			</button_iedit>
+			<button_iadd name="events_iadd">
+				<anchored to="events_iedit" position="lefthigh" offset="5,0" />
+				<target>events</target>
+			</button_iadd>
+			<list_triggercomponents name="events">
+				<anchored>
+					<top parent="columnanchor" anchor="bottom" relation="relative" offset="7" />
+					<left offset="0" />
+					<right offset="-5" />
+				</anchored>
+				<datasource>.events</datasource>
+				<class>trigger_event_item</class>
+			</list_triggercomponents>
+
+			<line_column name="divider" />
+
+			<header_column name="header_actions">
+				<static textres="trigger_header_actions" />
+			</header_column>
+			<button_iedit name="actions_iedit">
+				<anchored to="header_actions" position="righthigh" offset="-20,0" />
+				<target>actions</target>
+			</button_iedit>
+			<button_iadd name="actions_iadd">
+				<anchored to="actions_iedit" position="lefthigh" offset="5,0" />
+				<target>actions</target>
+			</button_iadd>
+			<list_triggercomponents name="actions">
+				<anchored>
+					<top parent="columnanchor" anchor="bottom" relation="relative" offset="7" />
+					<left offset="0" />
+					<right offset="-5" />
+				</anchored>
+				<datasource>.actions</datasource>
+				<class>trigger_action_item</class>
+			</list_triggercomponents>
+		</sheetdata>
+	</windowclass>
+
+	<windowclass name="trigger_event_item">
+		<margins control="0,0,0,2" />
+		<script file="triggers/scripts/triggerevent.lua" />
+		<sheetdata>
+			<label name="label_event_name">
+				<anchored position="insidetopleft" offset="10,0" />
+				<static textres="trigger_label_eventname" />
+			</label>
+			<button_idelete name="idelete">
+				<anchored>
+					<top />
+					<right offset="-5"/>
+				</anchored>
+			</button_idelete>
+			<!-- TODO changing event likely invalidates conditions, handle or make explicit at creation of event? -->
+			<comboboxc name="eventname">
+				<anchored height="20">
+					<left parent="label_event_name" anchor="right" offset="10" />
+					<top />
+					<right parent="idelete" anchor="left" offset="-7" />
+				</anchored>
+				<listmaxsize>12</listmaxsize>
+				<listdirection>down</listdirection>
+			</comboboxc>
+
+			<label name="label_conditions">
+				<anchored to="label_event_name">
+					<left />
+					<top anchor="bottom" offset="10" />
+					<right parent="" offset="-5" />
+				</anchored>
+				<static textres="trigger_label_conditions" />
+			</label>
+			<button_iedit name="conditions_iedit">
+				<anchored to="label_conditions" position="righthigh" offset="-20,0" />
+				<target>conditions</target>
+			</button_iedit>
+			<button_iadd name="conditions_iadd">
+				<anchored to="conditions_iedit" position="lefthigh" offset="5,0" />
+				<target>conditions</target>
+			</button_iadd>
+			<list_triggercomponents name="conditions">
+				<anchored to="label_conditions">
+					<left offset="10" />
+					<top anchor="bottom" offset="5" />
+					<right parent="" />
+				</anchored>
+				<datasource>.conditions</datasource>
+				<class>trigger_condition_item</class>
+			</list_triggercomponents>
+		</sheetdata>
+	</windowclass>
+
+	<windowclass name="trigger_condition_item">
+		<margins control="0,0,0,2" />
+		<script file="triggers/scripts/triggercondition.lua" />
+		<sheetdata>
+			<genericcontrol name="contentanchor">
+				<anchored height="0">
+					<left offset="10"/>
+					<top />
+					<right offset="-15" />
+				</anchored>
+			</genericcontrol>
+
+			<label name="label_condition_name">
+				<anchored>
+					<left />
+					<top parent="contentanchor" anchor="bottom" relation="relative" />
+				</anchored>
+				<static textres="trigger_label_conditionname" />
+			</label>
+			<button_idelete name="idelete">
+				<anchored>
+					<top />
+					<right offset="-5"/>
+				</anchored>
+			</button_idelete>
+			<comboboxc name="conditionname">
+				<anchored height="20">
+					<left parent="label_condition_name" anchor="right" offset="10" />
+					<top />
+					<right parent="idelete" anchor="left" offset="-7" />
+				</anchored>
+				<listmaxsize>12</listmaxsize>
+				<listdirection>down</listdirection>
+			</comboboxc>
+		</sheetdata>
+	</windowclass>
+
+	<windowclass name="trigger_action_item">
+		<margins control="0,0,0,2" />
+		<script file="triggers/scripts/triggeraction.lua" />
+		<sheetdata>
+			<genericcontrol name="contentanchor">
+				<anchored height="0">
+					<left offset="10"/>
+					<top />
+					<right offset="-15" />
+				</anchored>
+			</genericcontrol>
+
+			<label name="label_action_name">
+				<anchored>
+					<left />
+					<top parent="contentanchor" anchor="bottom" relation="relative" />
+				</anchored>
+				<static textres="trigger_label_actionname" />
+			</label>
+			<button_idelete name="idelete">
+				<anchored>
+					<top />
+					<right offset="-5"/>
+				</anchored>
+			</button_idelete>
+			<comboboxc name="actionname">
+				<anchored height="20">
+					<left parent="label_action_name" anchor="right" offset="10" />
+					<top />
+					<right parent="idelete" anchor="left" offset="-7" />
+				</anchored>
+				<listmaxsize>12</listmaxsize>
+				<listdirection>down</listdirection>
+			</comboboxc>
+		</sheetdata>
+	</windowclass>
+
+	<!-- TODO relocate -->
+	<template name="list_triggercomponents">
+		<list_column>
+			<anchored merge="delete" />
+			<child merge="delete" />
+			<sortby merge="delete" />
+		</list_column>
+	</template>
+
+	<template name="label_triggerparameter">
+		<label>
+			<anchored to="contentanchor" width="100">
+				<left />
+				<top anchor="bottom" relation="current" offset="7" />
+			</anchored>
+		</label>
+	</template>
+	<template name="triggerparameter_string">
+		<basicstring>
+			<anchored to="contentanchor">
+				<left offset="110" />
+				<top anchor="bottom" relation="relative" offset="7" />
+				<right />
+			</anchored>
+		</basicstring>
+	</template>
+	<template name="triggerparameter_number">
+		<basicnumber>
+			<anchored to="contentanchor" width="50">
+				<left offset="110" />
+				<top anchor="bottom" relation="relative" offset="7" />
+			</anchored>
+		</basicnumber>
+	</template>
+	<template name="triggerparameter_combo">
+		<comboboxc>
+			<script file="triggers/scripts/parametercombobox.lua" />
+			<anchored to="contentanchor" width="50">
+				<left offset="110" />
+				<top anchor="bottom" relation="relative" offset="7" />
+			</anchored>
+		</comboboxc>
+	</template>
 </root>

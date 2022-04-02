@@ -1,15 +1,33 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <root>
+	<string name="library_recordtype_label_trigger">Triggers</string>
+	<string name="library_recordtype_empty_trigger">&#171; New Trigger &#187;</string>
+
 	<string name="triggers_window_title">Triggers</string>
+	<string name="sidebar_tooltip_triggers">Triggers</string>
+
+	<string name="trigger_header_events">Events</string>
+	<string name="trigger_header_actions">Actions</string>
+	<string name="trigger_label_eventname">Event Name</string>
+	<string name="trigger_label_conditions">Conditions</string>
+	<string name="trigger_label_conditionname">Condition</string>
+	<string name="trigger_label_parameters">Parameters</string>
+	<string name="trigger_label_actionname">Action Name</string>
 
 	<string name="before_damage_taken_event">Before Damage Taken</string>
 
 	<string name="is_source_condition">Is Source</string>
 	<string name="is_target_condition">Is Target</string>
-	<string name="target_has_current_hit_points_condition">Target Has Current Hit Points</string>
 	<string name="source_has_effect_condition">Source Has Effect</string>
+	<string name="target_has_current_hit_points_condition">Target Has Current Hit Points</string>
 	<string name="target_has_effect_condition">Target Has Effect</string>
+
+	<string name="chat_message_parameter">Chat Message</string>
+	<string name="comparison_parameter">Comparison</string>
+	<string name="effect_name_parameter">Effect Name</string>
+	<string name="minimum_parameter">Minimum</string>
+	<string name="value_parameter">Value</string>
 
 	<string name="equal_comparison">=</string>
 	<string name="not_equal_comparison">≠</string>
@@ -21,4 +39,9 @@
 	<string name="ensure_target_has_remaining_hit_points_action">Ensure Target Has Remaining Hit Points</string>
 	<string name="remove_effect_from_source_action">Remove Effect From Source</string>
 	<string name="remove_effect_from_target_action">Remove Effect From Target</string>
+
+	<string name="unknown_event_error">ERROR: Unknown event ID: %s</string>
+	<string name="unknown_condition_error">ERROR: Unknown condition ID: %s</string>
+	<string name="unknown_parameter_error">ERROR: Unknown parameter ID: %s</string>
+	<string name="unknown_action_error">ERROR: Unknown action ID: %s</string>
 </root>
