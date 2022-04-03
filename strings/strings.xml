@@ -17,6 +17,7 @@
 
 	<string name="before_damage_taken_event">Before Damage Taken</string>
 
+	<string name="damage_value_condition">Damage Is Value</string>
 	<string name="is_source_condition">Is Source</string>
 	<string name="is_target_condition">Is Target</string>
 	<string name="source_has_effect_condition">Source Has Effect</string>
@@ -25,8 +26,11 @@
 
 	<string name="chat_message_parameter">Chat Message</string>
 	<string name="comparison_parameter">Comparison</string>
+	<string name="comapre_against_parameter">Compare Against</string>
 	<string name="effect_name_parameter">Effect Name</string>
 	<string name="minimum_parameter">Minimum</string>
+	<string name="number_parameter">Number</string>
+	<string name="target_hitpoints_parameter">Target Hitpoints</string>
 	<string name="value_parameter">Value</string>
 
 	<string name="equal_comparison">=</string>

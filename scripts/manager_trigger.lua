@@ -7,7 +7,8 @@ rIsSourceCondition = nil;
 rIsTargetCondition = nil;
 
 rComparisonParameter = {
-	sName = "comparison_parameter",
+	sName = "sComparison",
+	sDisplay = "comparison_parameter",
 	sType = "combo",
 	aDefinedValues = {
 		"equal_comparison",
@@ -62,6 +63,34 @@ function getEventDefinitions()
 	return tEventDefinitions;
 end
 
+function getParametersForEvent(vEvent)
+	local rEvent = vEvent;
+	if type(vEvent) == "string" then
+		rEvent = tEventDefinitions[vEvent];
+	end
+	return rEvent.aParameters;
+end
+
+function getCommonParametersForEvents(aEvents)
+	local tParameterCounts = {};
+	local nEventCount = 0;
+	for _,vEvent in ipairs(aEvents) do
+		nEventCount = nEventCount + 1;
+		local aParameters = getParametersForEvent(vEvent);
+		for _,sParameter in ipairs(aParameters) do
+			tParameterCounts[sParameter] = (tParameterCounts[sParameter] or 0) + 1;
+		end
+	end
+
+	local aParameters = {}
+	for sParameter,nCount in pairs(tParameterCounts) do
+		if nCount == nEventCount then
+			table.insert(aParameters, sParameter);
+		end
+	end
+	return aParameters;
+end
+
 function defineCondition(rCondition)
 	tConditionDefinitions[rCondition.sName] = rCondition;
 end
@@ -75,21 +104,13 @@ function getConditionDefinitions()
 end
 
 function getConditionDefinitionsForEvent(vEvent)
-	local rEvent = vEvent;
-	if type(vEvent) == "string" then
-		rEvent = tEventDefinitions[vEvent];
-	end
+	return getConditionDefinitionsForCommonEventParameters(getParametersForEvent(vEvent));
+end
 
+function getConditionDefinitionsForEventParameters(aEventParameters)
 	local aConditions = {}
 	for _,rConditionDefinition in pairs(tConditionDefinitions) do
-		local bHasRequirements = true;
-		for _,sParameterName in ipairs(rConditionDefinition.aRequiredParameters) do
-			if not StringManager.contains(rEvent.aParameters, sParameterName) then
-				bHasRequirements = false;
-				break;
-			end
-		end
-		if bHasRequirements then
+		if hasRequiredParameters(rConditionDefinition.aRequiredParameters, aEventParameters) then
 			table.insert(aConditions, rConditionDefinition);
 		end
 	end
@@ -109,46 +130,33 @@ function getActionDefinitions()
 end
 
 function getActionDefinitionsForEvents(aEvents)
-	local tActionCounts = {};
-	local nEventCount = 0;
-	for _,vEvent in ipairs(aEvents) do
-		nEventCount = nEventCount + 1;
-		local aActions = getActionDefinitionsForEvent(vEvent);
-		for _,rAction in ipairs(aActions) do
-			tActionCounts[rAction] = (tActionCounts[rAction] or 0) + 1;
-		end
-	end
-
-	local aActionDefinitions = {};
-	for rAction,nCount in pairs(tActionCounts) do
-		if nCount == nEventCount then
-			table.insert(aActionDefinitions, rAction);
-		end
-	end
-	return aActionDefinitions;
+	return getActionDefinitionsForCommonEventParameters(getCommonParametersForEvents(aEvents));
 end
 
 function getActionDefinitionsForEvent(vEvent)
-	local rEvent = vEvent;
-	if type(vEvent) == "string" then
-		rEvent = tEventDefinitions[vEvent];
-	end
-	
+	return getActionDefinitionsForCommonEventParameters(getParametersForEvent(vEvent));
+end
+
+function getActionDefinitionsForCommonEventParameters(aEventParameters)
 	local aActions = {}
 	for _,rActionDefinition in pairs(tActionDefinitions) do
-		local bHasRequirements = true;
-		for _,sParameterName in ipairs(rActionDefinition.aRequiredParameters) do
-			if not StringManager.contains(rEvent.aParameters, sParameterName) then
-				bHasRequirements = false;
-				break;
-			end
-		end
-		if bHasRequirements then
+		if hasRequiredParameters(rActionDefinition.aRequiredParameters, aEventParameters) then
 			table.insert(aActions, rActionDefinition);
 		end
 	end
 	return aActions;
 end
+
+function hasRequiredParameters(aRequiredParameters, aEventParameters)
+	local bHasRequirements = true;
+	for _,sParameterName in ipairs(aRequiredParameters) do
+		if not StringManager.contains(aEventParameters, sParameterName) then
+			bHasRequirements = false;
+			break;
+		end
+	end
+	return bHasRequirements;
+end	
 
 function registerTrigger(nodeTrigger)
 	local nTriggerId = getNewTriggerId();
@@ -193,6 +201,7 @@ function loadTriggerEventFromNode(nodeEvent)
 end
 
 function loadTriggerConditionFromNode(nodeCondition)
+	-- TODO invertibility
 	local rCondition = {
 		sName = DB.getValue(nodeCondition, "conditionname", "");
 		rData = loadParameters(nodeCondition)

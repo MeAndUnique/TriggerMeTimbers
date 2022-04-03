@@ -8,14 +8,21 @@ local bUpdating = false;
 
 function onInit()
 	self.onSelect = onValueSelected;
-	node = window.getDatabaseNode().getChild(getName());
+	node = window.getDatabaseNode().createChild(getName(), "string");
 	DB.addHandler(node.getPath(), "onUpdate", onNodeUpdate);
 end
 
-function configure(rParameterInfo)
-	for _,sDefinition in ipairs(rParameterInfo.aDefinedValues) do
-		add(sDefinition, Interface.getString(sDefinition));
+function configure(rParameterInfo, aEventParameters)
+	for _,vDefinition in ipairs(rParameterInfo.aDefinedValues) do
+		if type(vDefinition) == "string" then
+			add(vDefinition, Interface.getString(vDefinition));
+		else
+			if TriggerManager.hasRequiredParameters(vDefinition.aRequiredParameters or {}, aEventParameters) then
+				add(vDefinition.sValue, Interface.getString(vDefinition.sValue));
+			end
+		end
 	end
+	setComboValue(node.getValue());
 end
 
 function onClose()
@@ -34,8 +41,8 @@ function onNodeUpdate()
 end
 
 function setComboValue(sValue)
-	if not bUpdatingName then
-		if sValue == nil then
+	if not bUpdating then
+		if (sValue or "") == "" then
 			setListIndex(1);
 			sValue = getSelectedValue();
 			DB.setValue(node.getPath(), "string", sValue);
@@ -43,7 +50,7 @@ function setComboValue(sValue)
 			-- It would be nice if comboboxes had full support for key/value pair data.
 			setListValue(Interface.getString(sValue)); -- TODO interface alternative.
 		else
-			conditionname.setListValue(string.format(Interface.getString("unknown_parameter_error"), sValue));
+			setListValue(string.format(Interface.getString("unknown_parameter_error"), sValue));
 		end
 	end
 end

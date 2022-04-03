@@ -3,7 +3,8 @@
 -- attribution and copyright information.
 --
 
-local aParameterControls = {};
+local tParameterControls = {};
+local aEventParameters;
 
 function onInit()
 	actionname.onSelect = onActionNameSelected;
@@ -16,13 +17,14 @@ end
 
 function update(bReadOnly)
 	actionname.setComboBoxReadOnly(bReadOnly);
-	for _,rControlInfo in ipairs(aParameterControls) do
-		rControlInfo.control.setReadOnly(bReadOnly);
+	for _,rControlInfo in pairs(tParameterControls) do
+		rControlInfo.field.setReadOnly(bReadOnly);
 	end
 end
 
 function updateEvents(aEventNames)
-	for _,rActionDefinition in pairs(TriggerManager.getActionDefinitionsForEvents(aEventNames)) do
+	aEventParameters = TriggerManager.getCommonParametersForEvents(aEventNames);
+	for _,rActionDefinition in pairs(TriggerManager.getActionDefinitionsForCommonEventParameters(aEventParameters)) do
 		actionname.add(rActionDefinition.sName, Interface.getString(rActionDefinition.sName));
 	end
 
@@ -43,7 +45,7 @@ end
 
 function setActionName(sActionName)
 	if not bUpdatingName then
-		if sActionName == nil then
+		if (sActionName or "") == "" then
 			actionname.setListIndex(1);
 			sActionName = actionname.getSelectedValue();
 			DB.setValue(getDatabaseNode(), "eventname", "string", sActionName);
@@ -65,35 +67,56 @@ function rebuildParameters(sActionName)
 
 	-- The combobox list is lazily created, after which point new parameteres would be drawn overtop.
 	if actionname_cblist then
+		actionname.bringToFront();
+		actionname_cbbutton.bringToFront();
 		actionname_cblist.bringToFront();
 		actionname_cblistscroll.bringToFront();
 	end
 end
 
 function clearParameters()
-	for _,controls in ipairs(aParameterControls) do
+	for _,controls in pairs(tParameterControls) do
 		controls.label.destroy();
 		controls.field.destroy();
 	end
-	aParameterControls = {};
+	tParameterControls = {};
 
 	DB.deleteChild(getDatabaseNode(), "parameters");
 end
 
 function buildParameters(sActionName)
+	-- TODO include parameters based on available event parameters
 	local rAction = TriggerManager.getActionDefinition(sActionName);
 	if not rAction then
 		return;
 	end
 
 	local nodeParameters = DB.createChild(getDatabaseNode(), "parameters");
-	for sParameterName,rParameterInfo in pairs(rAction.tConfigurableParameters or {}) do
-		local label = createControl("label_triggerparameter", "label_" .. sParameterName);
-		local field = createControl("triggerparameter_" .. rParameterInfo.sType, sParameterName, "parameters." .. sParameterName);
-		label.setValue(Interface.getString(rParameterInfo.sName));
+	for _,rParameterInfo in ipairs(rAction.aConfigurableParameters or {}) do
+		local label = createControl("label_triggerparameter", "label_" .. rParameterInfo.sName);
+		local field = createControl("triggerparameter_" .. rParameterInfo.sType, rParameterInfo.sName, "parameters." .. rParameterInfo.sName);
+		label.setValue(Interface.getString(rParameterInfo.sDisplay));
 		if field.configure then
-			field.configure(rParameterInfo)
+			field.configure(rParameterInfo, aEventParameters)
 		end
-		table.insert(aParameterControls, {field = field, label = label});
+		field.onValueChanged = onParameterChanged;
+		tParameterControls[rParameterInfo.sName] = {field = field, label = label, rParameterInfo = rParameterInfo};
+	end
+end
+
+function onParameterChanged()
+	local rActionData = {};
+	for sParameterName,controls in pairs(tParameterControls) do
+		if controls.field.getSelectedValue then
+			rActionData[sParameterName] = controls.field.getSelectedValue();
+		else
+			rActionData[sParameterName] = controls.field.getValue();
+		end
+	end
+	for _,controls in pairs(tParameterControls) do
+		if controls.rParameterInfo.fCheckVisibility then
+			controls.label.setVisible(controls.rParameterInfo.fCheckVisibility(rActionData));
+			controls.field.setVisible(controls.rParameterInfo.fCheckVisibility(rActionData));
+		end
 	end
 end

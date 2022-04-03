@@ -19,9 +19,10 @@ function initializeConditions()
 		sName = "source_has_effect_condition",
 		fCondition = sourceHasEffectCondition,
 		aRequiredParameters = {"rSource"},
-		tConfigurableParameters = {
-			["sEffectName"] = {
-				sName = "effect_name_parameter",
+		aConfigurableParameters = {
+			{
+				sName = "sEffectName",
+				sDisplay = "effect_name_parameter",
 				sType = "string"
 			},
 		},
@@ -30,9 +31,10 @@ function initializeConditions()
 		sName = "target_has_effect_condition",
 		fCondition = targetHasEffectCondition,
 		aRequiredParameters = {"rTarget"},
-		tConfigurableParameters = {
-			["sEffectName"] = {
-				sName = "effect_name_parameter",
+		aConfigurableParameters = {
+			{
+				sName = "sEffectName",
+				sDisplay = "effect_name_parameter",
 				sType = "string"
 			},
 		},
@@ -47,9 +49,10 @@ function initializeActions()
 		sName = "remove_effect_from_source_action",
 		fAction = removeSourceEffect,
 		aRequiredParameters = {"rSource"},
-		tConfigurableParameters = {
-			["sEffectName"] = {
-				sName = "effect_name_parameter",
+		aConfigurableParameters = {
+			{
+				sName = "sEffectName",
+				sDisplay = "effect_name_parameter",
 				sType = "string"
 			},
 		},
@@ -58,9 +61,10 @@ function initializeActions()
 		sName = "remove_effect_from_target_action",
 		fAction = removeTargetEffect,
 		aRequiredParameters = {"rTarget"},
-		tConfigurableParameters = {
-			["sEffectName"] = {
-				sName = "effect_name_parameter",
+		aConfigurableParameters = {
+			{
+				sName = "sEffectName",
+				sDisplay = "effect_name_parameter",
 				sType = "string"
 			},
 		},

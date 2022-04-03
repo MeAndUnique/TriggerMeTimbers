@@ -56,7 +56,7 @@ end
 
 function setEventName(sEventName)
 	if not bUpdatingName then
-		if sEventName == nil then
+		if (sEventName or "") == "" then
 			eventname.setListIndex(1);
 			sEventName = getEventName();
 			DB.setValue(getDatabaseNode(), "eventname", "string", sEventName);

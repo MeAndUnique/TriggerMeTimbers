@@ -354,9 +354,10 @@
 	<template name="triggerparameter_combo">
 		<comboboxc>
 			<script file="triggers/scripts/parametercombobox.lua" />
-			<anchored to="contentanchor" width="50">
+			<anchored to="contentanchor">
 				<left offset="110" />
 				<top anchor="bottom" relation="relative" offset="7" />
+				<right />
 			</anchored>
 		</comboboxc>
 	</template>

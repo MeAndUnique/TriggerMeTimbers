@@ -28,7 +28,7 @@ rBeforeDamageTakenEvent = {
 --			which would need secondary configurable for type of comparison
 
 rTargetHasCurrentHitPointsCondition = nil;
- -- TODO relocate
+rDamageValueCondition = nil;
 
 rEnsureRemainingHitpointsAction = nil;
 
@@ -85,16 +85,44 @@ function initializeConditions()
 		sName = "target_has_current_hit_points_condition",
 		fCondition = targetHasCurrentHitpoints,
 		aRequiredParameters = {"rTarget"},
-		tConfigurableParameters = {
-			["nCompareAgainst"] = {
-				sName = "value_parameter",
+		aConfigurableParameters = {
+			TriggerManager.rComparisonParameter,
+			{
+				sName = "nCompareAgainst",
+				sDisplay = "value_parameter",
 				sType = "number",
 			},
-			["sComparison"] = TriggerManager.rComparisonParameter,
+		},
+	};
+	rDamageValueCondition = {
+		sName = "damage_value_condition",
+		fCondition = targetHasCurrentHitpoints,
+		aRequiredParameters = {"nDamage"},
+		aConfigurableParameters = {
+			TriggerManager.rComparisonParameter,
+			{
+				sName = "sCompareTo",
+				sDisplay = "comapre_against_parameter",
+				sType = "combo",
+				aDefinedValues = {
+					"number_parameter",
+					{
+						sValue = "target_hitpoints_parameter",
+						aRequiredParameters = {"nHitpoints"},
+					}
+				},
+			},
+			{
+				sName = "nCompareAgainst",
+				sDisplay = "value_parameter",
+				sType = "number",
+				fCheckVisibility = checkDamageValueCompareAgainstVisibility
+			}
 		},
 	};
 
 	TriggerManager.defineCondition(rTargetHasCurrentHitPointsCondition);
+	TriggerManager.defineCondition(rDamageValueCondition);
 end
 
 function intializeActions()
@@ -102,13 +130,15 @@ function intializeActions()
 		sName = "ensure_target_has_remaining_hit_points_action",
 		fAction = ensureRemainingHitpoints,
 		aRequiredParameters = {"nDamage", "nWounds", "nHitpoints"},
-		tConfigurableParameters = {
-			["nMinimum"] = {
-				sName = "minimum_parameter",
+		aConfigurableParameters = {
+			{
+				sName = "nMinimum",
+				sDisplay = "minimum_parameter",
 				sType = "number",
 			},
-			["sMessage"] = {
-				sName = "chat_message_parameter",
+			{
+				sName = "sMessage",
+				sDisplay = "chat_message_parameter",
 				sType = "string",
 			},
 		},
@@ -242,4 +272,8 @@ function ensureRemainingHitpoints(rTriggerData, rEventData)
 	if nInitialDamage ~= rEventData.nDamage then
 		table.insert(rDamageOutput.tNotifications, rTriggerData.sMessage);
 	end
+end
+
+function checkDamageValueCompareAgainstVisibility(rConditionData)
+	return rConditionData.sCompareTo == "number_parameter";
 end
