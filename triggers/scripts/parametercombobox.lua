@@ -8,7 +8,7 @@ local bUpdating = false;
 
 function onInit()
 	self.onSelect = onValueSelected;
-	node = window.getDatabaseNode().createChild(getName(), "string");
+	node = window.getDatabaseNode().createChild("parameters").createChild(getName(), "string");
 	DB.addHandler(node.getPath(), "onUpdate", onNodeUpdate);
 end
 

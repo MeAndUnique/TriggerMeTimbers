@@ -111,7 +111,7 @@ end
 
 function hasRequiredParameters(aRequiredParameters, aEventParameters)
 	local bHasRequirements = true;
-	for _,sParameterName in ipairs(aRequiredParameters) do
+	for _,sParameterName in ipairs(aRequiredParameters or {}) do
 		if not StringManager.contains(aEventParameters, sParameterName) then
 			bHasRequirements = false;
 			break;

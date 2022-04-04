@@ -102,6 +102,8 @@ function buildParameters(sActionName)
 		field.onValueChanged = onParameterChanged;
 		tParameterControls[rParameterInfo.sName] = {field = field, label = label, rParameterInfo = rParameterInfo};
 	end
+
+	onParameterChanged();
 end
 
 function onParameterChanged()
