@@ -3,11 +3,9 @@
 -- attribution and copyright information.
 --
 
-rSourceHasEffectCondition = nil;
-rTargetHasEffectCondition = nil;
+rCombatantHasEffectCondition = nil;
 
-rRemoveSourceEffectAction = nil;
-rRemoveTargetEffectAction = nil;
+rRemoveCombatantEffectAction = nil;
 
 function onInit()
 	initializeConditions();
@@ -15,23 +13,25 @@ function onInit()
 end
 
 function initializeConditions()
-	rSourceHasEffectCondition = {
-		sName = "source_has_effect_condition",
-		fCondition = sourceHasEffectCondition,
-		aRequiredParameters = {"rSource"},
+	rCombatantHasEffectCondition = {
+		sName = "combatant_has_effect_condition",
+		fCondition = combatantHasEffectCondition,
 		aConfigurableParameters = {
 			{
-				sName = "sEffectName",
-				sDisplay = "effect_name_parameter",
-				sType = "string"
+				sName = "sCombatant",
+				sDisplay = "combatant_parameter",
+				sType = "combo",
+				aDefinedValues = {
+					{
+						sValue = "source_subject",
+						aRequiredParameters = {"rSource"}
+					},
+					{
+						sValue = "target_subject",
+						aRequiredParameters = {"rTarget"}
+					},
+				}
 			},
-		},
-	};
-	rTargetHasEffectCondition = {
-		sName = "target_has_effect_condition",
-		fCondition = targetHasEffectCondition,
-		aRequiredParameters = {"rTarget"},
-		aConfigurableParameters = {
 			{
 				sName = "sEffectName",
 				sDisplay = "effect_name_parameter",
@@ -40,16 +40,29 @@ function initializeConditions()
 		},
 	};
 
-	TriggerManager.defineCondition(rSourceHasEffectCondition);
-	TriggerManager.defineCondition(rTargetHasEffectCondition);
+	TriggerManager.defineCondition(rCombatantHasEffectCondition);
 end
 
 function initializeActions()
-	rRemoveSourceEffectAction = {
-		sName = "remove_effect_from_source_action",
-		fAction = removeSourceEffect,
-		aRequiredParameters = {"rSource"},
+	rRemoveCombatantEffectAction = {
+		sName = "remove_effect_from_combatant_action",
+		fAction = removeCombatantEffect,
 		aConfigurableParameters = {
+			{
+				sName = "sCombatant",
+				sDisplay = "combatant_parameter",
+				sType = "combo",
+				aDefinedValues = {
+					{
+						sValue = "source_subject",
+						aRequiredParameters = {"rSource"}
+					},
+					{
+						sValue = "target_subject",
+						aRequiredParameters = {"rTarget"}
+					},
+				}
+			},
 			{
 				sName = "sEffectName",
 				sDisplay = "effect_name_parameter",
@@ -57,35 +70,24 @@ function initializeActions()
 			},
 		},
 	};
-	rRemoveTargetEffectAction = {
-		sName = "remove_effect_from_target_action",
-		fAction = removeTargetEffect,
-		aRequiredParameters = {"rTarget"},
-		aConfigurableParameters = {
-			{
-				sName = "sEffectName",
-				sDisplay = "effect_name_parameter",
-				sType = "string"
-			},
-		},
-	};
 
-	TriggerManager.defineAction(rRemoveSourceEffectAction);
-	TriggerManager.defineAction(rRemoveTargetEffectAction);
+	TriggerManager.defineAction(rRemoveCombatantEffectAction);
 end
 
-function sourceHasEffectCondition(rTriggerData, rEventData)
-	return EffectManager.hasEffect(rEventData.rSource, rTriggerData.sEffectName);
+function combatantHasEffectCondition(rTriggerData, rEventData)
+	if rTriggerData.sCombatant == "source_subject" then
+		return EffectManager.hasEffect(rEventData.rSource, rTriggerData.sEffectName);
+	elseif rTriggerData.sCombatant == "target_subject" then
+		return EffectManager.hasEffect(rEventData.rTarget, rTriggerData.sEffectName);
+	end
+
+	return false;
 end
 
-function targetHasEffectCondition(rTriggerData, rEventData)
-	return EffectManager.hasEffect(rEventData.rTarget, rTriggerData.sEffectName);
-end
-
-function removeSourceEffect(rTriggerData, rEventData)
-	EffectManager.removeEffect(ActorManager.getCTNode(rEventData.rSource), rTriggerData.sEffectName);
-end
-
-function removeTargetEffect(rTriggerData, rEventData)
-	EffectManager.removeEffect(ActorManager.getCTNode(rEventData.rTarget), rTriggerData.sEffectName);
+function removeCombatantEffect(rTriggerData, rEventData)
+	if rTriggerData.sCombatant == "source_subject" then
+		EffectManager.removeEffect(ActorManager.getCTNode(rEventData.rSource), rTriggerData.sEffectName);
+	elseif rTriggerData.sCombatant == "target_subject" then
+		EffectManager.removeEffect(ActorManager.getCTNode(rEventData.rTarget), rTriggerData.sEffectName);
+	end
 end

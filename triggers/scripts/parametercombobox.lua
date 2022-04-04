@@ -13,16 +13,25 @@ function onInit()
 end
 
 function configure(rParameterInfo, aEventParameters)
+	-- TODO handle non-resource strings (e.g. dice actions)
 	for _,vDefinition in ipairs(rParameterInfo.aDefinedValues) do
 		if type(vDefinition) == "string" then
-			add(vDefinition, Interface.getString(vDefinition));
+			addValue(vDefinition);
 		else
 			if TriggerManager.hasRequiredParameters(vDefinition.aRequiredParameters or {}, aEventParameters) then
-				add(vDefinition.sValue, Interface.getString(vDefinition.sValue));
+				addValue(vDefinition.sValue);
 			end
 		end
 	end
 	setComboValue(node.getValue());
+end
+
+function addValue(sValue)
+	local sResource = Interface.getString(sValue);
+	if sResource == "" then
+		sResource = nil;
+	end
+	add(sValue, sResource);
 end
 
 function onClose()

@@ -8,7 +8,7 @@ local bInitialized = false;
 function onInit()
 	actions.onEntryAdded = onActionAdded;
 	bInitialized = true;
-	-- onEventChanged();
+	onEventChanged();
 end
 
 function update()

@@ -334,23 +334,6 @@
 			</anchored>
 		</label>
 	</template>
-	<template name="triggerparameter_string">
-		<basicstring>
-			<anchored to="contentanchor">
-				<left offset="110" />
-				<top anchor="bottom" relation="relative" offset="7" />
-				<right />
-			</anchored>
-		</basicstring>
-	</template>
-	<template name="triggerparameter_number">
-		<basicnumber>
-			<anchored to="contentanchor" width="50">
-				<left offset="110" />
-				<top anchor="bottom" relation="relative" offset="7" />
-			</anchored>
-		</basicnumber>
-	</template>
 	<template name="triggerparameter_combo">
 		<comboboxc>
 			<script file="triggers/scripts/parametercombobox.lua" />
@@ -360,5 +343,30 @@
 				<right />
 			</anchored>
 		</comboboxc>
+	</template>
+	<template name="triggerparameter_bool">
+		<button_checkbox>
+			<anchored to="contentanchor" width="20" height="20">
+				<left offset="110" />
+				<top anchor="bottom" relation="relative" offset="7" />
+			</anchored>
+		</button_checkbox>
+	</template>
+	<template name="triggerparameter_number">
+		<basicnumber>
+			<anchored to="contentanchor" width="50">
+				<left offset="110" />
+				<top anchor="bottom" relation="relative" offset="7" />
+			</anchored>
+		</basicnumber>
+	</template>
+	<template name="triggerparameter_string">
+		<basicstring>
+			<anchored to="contentanchor">
+				<left offset="110" />
+				<top anchor="bottom" relation="relative" offset="7" />
+				<right />
+			</anchored>
+		</basicstring>
 	</template>
 </root>

@@ -51,6 +51,7 @@ function onInit()
 end
 
 function onDesktopInit()
+	Debug.chat("test:", type(Interface.getString("nonsense")), Interface.getString("nonsense"))
 	-- TODO remove debug code
 	-- TriggerManager.registerTrigger({
 	-- 	tEvents={
@@ -86,7 +87,7 @@ function initializeConditions()
 		fCondition = targetHasCurrentHitpoints,
 		aRequiredParameters = {"rTarget"},
 		aConfigurableParameters = {
-			TriggerManager.rComparisonParameter,
+			TriggerData.rComparisonParameter,
 			{
 				sName = "nCompareAgainst",
 				sDisplay = "value_parameter",
@@ -96,13 +97,13 @@ function initializeConditions()
 	};
 	rDamageValueCondition = {
 		sName = "damage_value_condition",
-		fCondition = targetHasCurrentHitpoints,
+		fCondition = damageIsValue,
 		aRequiredParameters = {"nDamage"},
 		aConfigurableParameters = {
-			TriggerManager.rComparisonParameter,
+			TriggerData.rComparisonParameter,
 			{
 				sName = "sCompareTo",
-				sDisplay = "comapre_against_parameter",
+				sDisplay = "compare_against_parameter",
 				sType = "combo",
 				aDefinedValues = {
 					"number_parameter",
@@ -199,21 +200,21 @@ function messageDamage(rSource, rTarget, bSecret, sDamageType, sDamageDesc, sTot
 	rDamageOutput = nil;
 end
 
-function isDamageSource(rTriggerData, rEventData)
-	return rTriggerData.sSourcePath == rEventData.rSource.sCreatureNode;
-end
-
-function isDamageTarget(rTriggerData, rEventData)
-	return rEventData.rTarget and rTriggerData.sTargetPath == rEventData.rTarget.sCreatureNode;
-end
-
 function targetHasCurrentHitpoints(rTriggerData, rEventData)
 	if rEventData.rTarget == nil then
 		return false;
 	end
 
 	local nCurrent = getCurrentHitPoints(rEventData.rTarget);
-	return TriggerManager.resolveComparison(nCurrent, rTriggerData.nCompareAgainst, rTriggerData.sComparison);
+	return TriggerHelper.resolveComparison(nCurrent, rTriggerData.nCompareAgainst, rTriggerData.sComparison);
+end
+
+function damageIsValue(rTriggerData, rEventData)
+	if rTriggerData.sCompareTo == "target_hitpoints_parameter" then
+		return TriggerHelper.resolveComparison(rEventData.nDamage, rEventData.nHitpoints, rTriggerData.sComparison);
+	else
+		return TriggerHelper.resolveComparison(rEventData.nDamage, rTriggerData.nCompareAgainst, rTriggerData.sComparison);
+	end
 end
 
 function getCurrentHitPoints(rActor)

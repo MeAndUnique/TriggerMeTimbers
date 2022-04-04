@@ -3,23 +3,6 @@
 -- attribution and copyright information.
 --
 
-rIsSourceCondition = nil;
-rIsTargetCondition = nil;
-
-rComparisonParameter = {
-	sName = "sComparison",
-	sDisplay = "comparison_parameter",
-	sType = "combo",
-	aDefinedValues = {
-		"equal_comparison",
-		"not_equal_comparison",
-		"greater_than_comparison",
-		"greater_than_equal_comparison",
-		"less_than_comparison",
-		"less_than_equal_comparison",
-	},
-};
-
 -- A Trigger consists of one or more Events and one or more Actions.
 	-- When any of the events fire all of the Actions will be executed.
 -- An Event consists of zero or more Conditions.
@@ -29,27 +12,6 @@ local tEventDefinitions = {};
 local tConditionDefinitions = {};
 local tActionDefinitions = {};
 local tRegisteredEventTriggers = {};
-
-
-function onInit()
-	initializeConditions();
-end
-
-function initializeConditions()
-	rIsSourceCondition = {
-		sName = "is_source_condition",
-		fCondition = isDamageSource,
-		aRequiredParameters = {"rSource"}
-	};
-	rIsTargetCondition = {
-		sName = "is_target_condition",
-		fCondition = isDamageTarget,
-		aRequiredParameters = {"rTarget"}
-	};
-	
-	TriggerManager.defineCondition(rIsSourceCondition);
-	TriggerManager.defineCondition(rIsTargetCondition);
-end
 
 function defineEvent(rEvent)
 	tEventDefinitions[rEvent.sName] = rEvent;
@@ -244,21 +206,5 @@ function fireEvent(sEventName, rEventData)
 				end
 			end
 		end
-	end
-end
-
-function resolveComparison(vLeft, vRight, sComparison)
-	if sComparison == "not_equal_comparison" then
-		return vLeft ~= vRight;
-	elseif sComparison == "greater_than_comparison" then
-		return vLeft > vRight;
-	elseif sComparison == "greater_than_equal_comparison" then
-		return vLeft >= vRight;
-	elseif sComparison == "less_than_comparison" then
-		return vLeft < vRight;
-	elseif sComparison == "less_than_equal_comparison" then
-		return vLeft <= vRight;
-	else
-		return vLeft == vRight;
 	end
 end
