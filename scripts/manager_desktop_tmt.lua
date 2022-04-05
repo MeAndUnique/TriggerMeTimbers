@@ -6,7 +6,7 @@
 function onInit()
 	DesktopManager.registerSidebarToolButton({
 		tooltipres = "sidebar_tooltip_triggers",
-		class = "triggers", -- TODO or "triggers"
-		path = "activetriggers",
+		class = "masterindex", -- TODO or "triggers"
+		path = "activetrigger",
 	});
 end

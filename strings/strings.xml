@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <root>
+	<string name="library_recordtype_label_activetrigger">Active Triggers</string>
+	<string name="library_recordtype_empty_activetrigger">&#171; New Trigger &#187;</string>
 	<string name="library_recordtype_label_trigger">Triggers</string>
 	<string name="library_recordtype_empty_trigger">&#171; New Trigger &#187;</string>
 
@@ -65,7 +67,7 @@
 	<string name="trait_type_all">All</string>
 	<string name="trait_type_feat">Feat</string>
 	<string name="trait_type_feature">Feature</string>
-	<string name="trait_type_triat">Trait</string>
+	<string name="trait_type_trait">Trait</string>
 
 	<string name="source_subject">Source</string>
 	<string name="target_subject">Target</string>

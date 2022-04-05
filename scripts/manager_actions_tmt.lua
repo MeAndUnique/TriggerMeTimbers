@@ -121,7 +121,6 @@ function initializeActions()
 end
 
 function resolveAction(rSource, rTarget, rRoll)
-	Debug.chat("resolveAction", rSource, rTarget, rRoll);
 	local rEventData = {rSource=rSource, rTarget=rTarget, rRoll=rRoll};
 	TriggerManager.fireEvent(rDiceRolledEvent.sName, rEventData);
 	return resolveActionOriginal(rSource, rTarget, rRoll);

@@ -11,6 +11,12 @@ aRecordOverrides = {
 		bHidden = false,
 		aDataMap = { "trigger" },
 	},
+	["activetrigger"] = {
+		aDataMap = { "activetrigger" },
+		sListDisplayClass = "masterindexitem_activetrigger",
+		sRecordDisplayClass = "trigger",
+		bHidden = true,
+	},
 };
 
 function onInit()

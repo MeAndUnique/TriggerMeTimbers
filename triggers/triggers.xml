@@ -13,6 +13,7 @@
 		<minimize>minimized_reference</minimize>
 		<softclose />
 		<nodelete />
+		<script file="triggers/scripts/triggers.lua" />
 		<sheetdata>
 			<windowtitlebar name="title">
 				<resource>triggers_window_title</resource>
@@ -55,7 +56,6 @@
 				<child><backcolor>1A40301E</backcolor></child>
 				<class>triggerlist_item</class>
 				<allowdelete />
-				<useallmodules />
 				<skipempty />
 				<!-- TODO <script file="campaign/scripts/masterindex_list.lua" /> -->
 			</windowlist>
@@ -85,6 +85,20 @@
 			<masterindexitem_anchor_right name="rightanchor" />
 			<masterindexitem_idelete name="idelete" />
 			<masterindexitem_access name="access" />
+			<masterindexitem_category name="category" />
+			
+			<masterindexitem_name name="name" />
+		</sheetdata>
+	</windowclass>
+
+	<windowclass name="masterindexitem_activetrigger">
+		<margins control="0,0,0,2" />
+		<script file="triggers/scripts/masterindextriggeritem_window.lua" />
+		<sheetdata>
+			<masterindexitem_link name="link" />
+
+			<masterindexitem_anchor_right name="rightanchor" />
+			<masterindexitem_idelete name="idelete" />
 			<masterindexitem_category name="category" />
 			
 			<masterindexitem_name name="name" />
@@ -277,6 +291,17 @@
 				<listmaxsize>12</listmaxsize>
 				<listdirection>down</listdirection>
 			</comboboxc>
+
+			<windowlist name="parameters">
+				<anchored to='contentanchor'>
+					<left />
+					<top anchor="bottom" relation="relative" offset="5"	/>
+					<right />
+				</anchored>
+				<class>empty_trigger_parameter</class>
+				<noscroll />
+				<skipempty />
+			</windowlist>
 		</sheetdata>
 	</windowclass>
 
@@ -314,6 +339,127 @@
 				<listmaxsize>12</listmaxsize>
 				<listdirection>down</listdirection>
 			</comboboxc>
+
+			<windowlist name="parameters">
+				<anchored to='contentanchor'>
+					<left />
+					<top anchor="bottom" relation="relative" offset="5"	/>
+					<right />
+				</anchored>
+				<class>empty_trigger_parameter</class>
+				<noscroll />
+				<skipempty />
+			</windowlist>
+		</sheetdata>
+	</windowclass>
+	
+	<windowclass name="empty_trigger_parameter">
+	</windowclass>
+
+	<windowclass name="trigger_parameter_bool">
+		<margins control="0,0,0,2" />
+		<script file="triggers/scripts/triggerparameter.lua" />
+		<sheetdata>
+			<genericcontrol name="contentanchor">
+				<anchored height="0">
+					<left offset="10"/>
+					<top />
+					<right offset="-15" />
+				</anchored>
+			</genericcontrol>
+			<label name="label">
+				<anchored to="contentanchor" width="100">
+					<left />
+					<top anchor="bottom" relation="current" offset="7" />
+				</anchored>
+			</label>
+			<button_checkbox name="value">
+				<anchored to="contentanchor" width="20" height="20">
+					<left offset="110" />
+					<top anchor="bottom" relation="relative" offset="7" />
+				</anchored>
+			</button_checkbox>
+		</sheetdata>
+	</windowclass>
+
+	<windowclass name="trigger_parameter_combo">
+		<margins control="0,0,0,2" />
+		<script file="triggers/scripts/triggerparameter.lua" />
+		<sheetdata>
+			<genericcontrol name="contentanchor">
+				<anchored height="0">
+					<left offset="10"/>
+					<top />
+					<right offset="-15" />
+				</anchored>
+			</genericcontrol>
+			<label name="label">
+				<anchored to="contentanchor" width="100">
+					<left />
+					<top anchor="bottom" relation="current" offset="7" />
+				</anchored>
+			</label>
+			<comboboxc name="value">
+				<script file="triggers/scripts/parametercombobox.lua" />
+				<anchored to="contentanchor">
+					<left offset="110" />
+					<top anchor="bottom" relation="relative" offset="7" />
+					<right />
+				</anchored>
+			</comboboxc>
+		</sheetdata>
+	</windowclass>
+
+	<windowclass name="trigger_parameter_number">
+		<margins control="0,0,0,2" />
+		<script file="triggers/scripts/triggerparameter.lua" />
+		<sheetdata>
+			<genericcontrol name="contentanchor">
+				<anchored height="0">
+					<left offset="10"/>
+					<top />
+					<right offset="-15" />
+				</anchored>
+			</genericcontrol>
+			<label name="label">
+				<anchored to="contentanchor" width="100">
+					<left />
+					<top anchor="bottom" relation="current" offset="7" />
+				</anchored>
+			</label>
+			<basicnumber name="value">
+				<anchored to="contentanchor" width="50">
+					<left offset="110" />
+					<top anchor="bottom" relation="relative" offset="7" />
+				</anchored>
+			</basicnumber>
+		</sheetdata>
+	</windowclass>
+
+	<windowclass name="trigger_parameter_string">
+		<margins control="0,0,0,2" />
+		<script file="triggers/scripts/triggerparameter.lua" />
+		<sheetdata>
+			<genericcontrol name="contentanchor">
+				<anchored height="0">
+					<left offset="10"/>
+					<top />
+					<right offset="-15" />
+				</anchored>
+			</genericcontrol>
+			<label name="label">
+				<anchored to="contentanchor" width="100">
+					<left />
+					<top anchor="bottom" relation="current" offset="7" />
+				</anchored>
+			</label>
+			<basicstring name="value">
+				<anchored to="contentanchor">
+					<left offset="110" />
+					<top anchor="bottom" relation="relative" offset="7" />
+					<right />
+				</anchored>
+			</basicstring>
 		</sheetdata>
 	</windowclass>
 

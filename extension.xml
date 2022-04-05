@@ -35,8 +35,9 @@ SOFTWARE.
 
 	<base>
 		<script name="ActionsManagerTMT" file="scripts/manager_actions_tmt.lua" />
-		<script name="ActionDamage5ETMT" file="scripts/manager_action_damage_5e_tmt.lua" ruleset="5E" />
-		<script name="CharDamage5ETMT" file="scripts/manager_char_5e_tmt.lua" ruleset="5E" />
+		<script name="ActionDamageTMT_5E" file="scripts/manager_action_damage_5e_tmt.lua" ruleset="5E" />
+		<script name="CampaignDataManagerTMT" file="scripts/manager_campaigndata_tmt.lua" />
+		<script name="CharDamageTMT_5E" file="scripts/manager_char_5e_tmt.lua" ruleset="5E" />
 		<script name="DesktopManagerTMT" file="scripts/manager_desktop_tmt.lua" />
 		<script name="EffectManagerTMT" file="scripts/manager_effect_tmt.lua" />
 		<script name="LibraryDataTMT" file="scripts/data_library_tmt.lua" />

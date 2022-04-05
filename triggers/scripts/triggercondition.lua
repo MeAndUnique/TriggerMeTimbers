@@ -3,11 +3,12 @@
 -- attribution and copyright information.
 --
 
-local tParameterControls = {};
+local rConditionData = {};
 local aEventParameters;
 
 function onInit()
 	conditionname.onSelect = onConditionNameSelected;
+	parameters.onFilter = onFilterParameters;
 	DB.addHandler(getDatabaseNode().getPath("conditionname"), "onUpdate", onConditionNameChanged);
 end
 
@@ -17,8 +18,8 @@ end
 
 function update(bReadOnly)
 	conditionname.setComboBoxReadOnly(bReadOnly);
-	for _,rControlInfo in pairs(tParameterControls) do
-		rControlInfo.field.setReadOnly(bReadOnly);
+	for _,winParameter in ipairs(parameters.getWindows()) do
+		winParameter.update(bReadOnly);
 	end
 end
 
@@ -64,28 +65,14 @@ end
 function rebuildParameters(sConditionName)
 	clearParameters();
 	buildParameters(sConditionName);
-
-	-- The combobox list is lazily created, after which point new parameteres would be drawn overtop.
-	if conditionname_cblist then
-		conditionname.bringToFront();
-		conditionname_cbbutton.bringToFront();
-		conditionname_cblist.bringToFront();
-		conditionname_cblistscroll.bringToFront();
-	end
 end
 
 function clearParameters()
-	for _,controls in pairs(tParameterControls) do
-		controls.label.destroy();
-		controls.field.destroy();
-	end
-	tParameterControls = {};
-
+	rConditionData = {};
 	DB.deleteChild(getDatabaseNode(), "parameters");
 end
 
 function buildParameters(sConditionName)
-	-- TODO include parameters based on available event parameters
 	local rCondition = TriggerManager.getConditionDefinition(sConditionName);
 	if not rCondition then
 		return;
@@ -93,32 +80,22 @@ function buildParameters(sConditionName)
 
 	local nodeParameters = DB.createChild(getDatabaseNode(), "parameters");
 	for _,rParameterInfo in ipairs(rCondition.aConfigurableParameters or {}) do
-		local label = createControl("label_triggerparameter", "label_" .. rParameterInfo.sName);
-		local field = createControl("triggerparameter_" .. rParameterInfo.sType, rParameterInfo.sName, "parameters." .. rParameterInfo.sName);
-		label.setValue(Interface.getString(rParameterInfo.sDisplay));
-		if field.configure then
-			field.configure(rParameterInfo, aEventParameters);
-		end
-		field.onValueChanged = onParameterChanged;
-		tParameterControls[rParameterInfo.sName] = {field = field, label = label, rParameterInfo = rParameterInfo};
+		local nodeParameter = nodeParameters.createChild();
+		local winParameter = parameters.createWindowWithClass("trigger_parameter_" .. rParameterInfo.sType, nodeParameter);
+		winParameter.configure(rParameterInfo, aEventParameters);
 	end
 
 	onParameterChanged();
 end
 
 function onParameterChanged()
-	local rConditionData = {};
-	for sParameterName,controls in pairs(tParameterControls) do
-		if controls.field.getSelectedValue then
-			rConditionData[sParameterName] = controls.field.getSelectedValue();
-		else
-			rConditionData[sParameterName] = controls.field.getValue();
-		end
+	for _,winParameter in pairs(parameters.getWindows()) do
+		local sParameterName, vValue = winParameter.getNameAndValue();
+		rConditionData[sParameterName] = vValue;
 	end
-	for _,controls in pairs(tParameterControls) do
-		if controls.rParameterInfo.fCheckVisibility then
-			controls.label.setVisible(controls.rParameterInfo.fCheckVisibility(rConditionData));
-			controls.field.setVisible(controls.rParameterInfo.fCheckVisibility(rConditionData));
-		end
-	end
+	parameters.applyFilter();
+end
+
+function onFilterParameters(winParameter)
+	return winParameter.shouldBeVisible(rConditionData);
 end
