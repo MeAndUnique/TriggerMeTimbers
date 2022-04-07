@@ -282,11 +282,24 @@
 					<right offset="-5"/>
 				</anchored>
 			</button_idelete>
+			<button_checkbox name="inverted">
+				<anchored to="contentanchor" width="20" height="20">
+					<top />
+					<right parent="idelete" anchor="left" offset="-7" />
+				</anchored>
+			</button_checkbox>
+			<label name="label_inverted">
+				<anchored>
+					<top />
+					<right parent="inverted" anchor="left" offset="-5" />
+				</anchored>
+				<static textres="trigger_label_inverted" />
+			</label>
 			<comboboxc name="conditionname">
 				<anchored height="20">
 					<left parent="label_condition_name" anchor="right" offset="10" />
 					<top />
-					<right parent="idelete" anchor="left" offset="-7" />
+					<right parent="label_inverted" anchor="left" offset="-7" />
 				</anchored>
 				<listmaxsize>12</listmaxsize>
 				<listdirection>down</listdirection>
@@ -386,6 +399,8 @@
 					<top anchor="bottom" relation="relative" offset="7" />
 					<right />
 				</anchored>
+				<listdirection>down</listdirection>
+				<listmaxsize>6</listmaxsize>
 			</comboboxc>
 		</sheetdata>
 	</windowclass>

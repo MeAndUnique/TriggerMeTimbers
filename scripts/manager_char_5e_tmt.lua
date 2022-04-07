@@ -12,7 +12,7 @@ end
 function initializeConditions()
 	rCreatureHasTraitCondition = {
 		sName = "creature_has_trait_condition",
-		fCondition = sourceHasTraitCondition,
+		fCondition = creatureHasTraitCondition,
 		aRequiredParameters = {},
 		aConfigurableParameters = {
 			{

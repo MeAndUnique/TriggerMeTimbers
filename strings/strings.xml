@@ -11,11 +11,12 @@
 
 	<string name="trigger_header_events">Events</string>
 	<string name="trigger_header_actions">Actions</string>
+	<string name="trigger_label_actionname">Action Name</string>
 	<string name="trigger_label_eventname">Event Name</string>
 	<string name="trigger_label_conditions">Conditions</string>
 	<string name="trigger_label_conditionname">Condition</string>
+	<string name="trigger_label_inverted">Invert?</string>
 	<string name="trigger_label_parameters">Parameters</string>
-	<string name="trigger_label_actionname">Action Name</string>
 
 	<string name="before_damage_taken_event">Before Damage Taken</string>
 	<string name="dice_rolled_event">Dice Rolled</string>
@@ -31,6 +32,7 @@
 
 	<string name="ensure_target_has_remaining_hit_points_action">Ensure Target Has Remaining Hit Points</string>
 	<string name="remove_effect_from_combatant_action">Remove Effect From Combatant</string>
+	<string name="replace_dice_action">Replace Dice</string>
 	<string name="reroll_dice_action">Reroll Dice</string>
 
 	<string name="chat_message_parameter">Chat Message</string>

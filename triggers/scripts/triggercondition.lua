@@ -46,7 +46,7 @@ function setConditionName(sConditionName, bRebuild)
 		if (sConditionName or "") == "" then
 			conditionname.setListIndex(1);
 			sConditionName = conditionname.getSelectedValue();
-			DB.setValue(getDatabaseNode(), "eventname", "string", sConditionName);
+			DB.setValue(getDatabaseNode(), "conditionname", "string", sConditionName);
 		elseif conditionname.hasValue(sConditionName) then
 			-- It would be nice if comboboxes had full support for key/value pair data.
 			conditionname.setListValue(Interface.getString(sConditionName));

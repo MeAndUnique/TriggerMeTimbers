@@ -47,7 +47,7 @@ function initializeConditions()
 	};
 	rRollValueCondition = {
 		sName = "roll_is_value_condition",
-		fCondition = rollIsType,
+		fCondition = rollIsValue,
 		aRequiredParameters = {"rRoll"},
 		aConfigurableParameters = {
 			{
@@ -117,20 +117,34 @@ function initializeActions()
 		}
 	};
 
+	rReplaceDiceAction = UtilityManager.copyDeep(rRerollDiceAction);
+	rReplaceDiceAction.sName = "replace_dice_action";
+	rReplaceDiceAction.fAction = replaceDice;
+	table.insert(rReplaceDiceAction.aConfigurableParameters,
+	{
+		sName = "sReplacement",
+		sDisplay = "die_replacement_parameter",
+		sType = "number",
+	});
+
 	TriggerManager.defineAction(rRerollDiceAction);
+	TriggerManager.defineAction(rReplaceDiceAction);
 end
 
 function resolveAction(rSource, rTarget, rRoll)
+	Debug.chat("resolveAction", rSource, rTarget, rRoll)
 	local rEventData = {rSource=rSource, rTarget=rTarget, rRoll=rRoll};
 	TriggerManager.fireEvent(rDiceRolledEvent.sName, rEventData);
 	return resolveActionOriginal(rSource, rTarget, rRoll);
 end
 
 function rollIsType(rTriggerData, rEventData)
+	Debug.chat("rollIsType", rTriggerData, rEventData)
 	return rTriggerData.sType == rEventData.rRoll.sType;
 end
 
 function rollIsValue(rTriggerData, rEventData)
+	Debug.chat("rollIsValue", rTriggerData, rEventData)
 	-- TODO Halfling luck can reroll either one of the dice, but not both
 	-- may want to with adv dropping a 1, since the high roll could still be low
 	-- Could consider bool for calculating before/after dropping the die, but then any replacement action gets more complicated
@@ -138,27 +152,64 @@ function rollIsValue(rTriggerData, rEventData)
 		-- All/Lowest/Highest option on action could resolve that
 		-- How to handle post-drop things then, such as reliable talent etc?
 	if rTriggerData.bIncludeAdvantage and ActionsManager2 and ActionsManager2.decodeAdvantage then
+		Debug.chat("wat")
 		ActionsManager2.decodeAdvantage(rEventData.rRoll);
 	end
 
-	local nTotal = ActionsManager.total(rEventData.rRoll);
-	if not rTriggerData.bIncludeModifiers then
-		nTotal = nTotal - rEventData.rRoll.nMod;
+	-- TODO probably can clean this up a fair bit
+	local bResult = false;
+	if rTriggerData.sMatchAgainst == "any_dice" then
+		Debug.chat("rollIsValue - any", rEventData.rRoll.aDice)
+		for _,rDie in ipairs(rEventData.rRoll.aDice) do
+			Debug.chat("rollIsValue - any - die", rDie)
+			if not rDie.dropped then
+				if TriggerData.resolveComparison(rDie.result, rTriggerData.nCompareAgainst, rTriggerData.sComparison) then
+					bResult = true;
+					break;
+				end
+			end
+		end
+	elseif rTriggerData.sMatchAgainst == "all_dice" then
+		local bAllMatch = true;
+		for _,rDie in ipairs(rEventData.rRoll.aDice) do
+			if not rDie.dropped then
+				if not TriggerData.resolveComparison(rDie.result, rTriggerData.nCompareAgainst, rTriggerData.sComparison) then
+					bAllMatch = false;
+					break;
+				end
+			end
+		end
+		bResult = bAllMatch;
+	elseif rTriggerData.sMatchAgainst == "sum_dice" then
+		local nTotal = ActionsManager.total(rEventData.rRoll);
+		if not rTriggerData.bIncludeModifiers then
+			nTotal = nTotal - rEventData.rRoll.nMod;
+		end
+	
+		bResult = TriggerData.resolveComparison(nTotal, rTriggerData.nCompareAgainst, rTriggerData.sComparison);
 	end
 
-	return TriggerData.resolveComparison(nTotal, rTriggerData.nCompareAgainst, rTriggerData.sComparison);
+	return bResult;
 end
 
 function rerollDice(rTriggerData, rEventData)
+	changeDice(rTriggerData, rEventData, "REROLL", DiceManager.evalDie)
+end
+
+function replaceDice(rTriggerData, rEventData)
+	changeDice(rTriggerData, rEventData, "REPLACE", function(sDieType) return rTriggerData.sReplacement; end)
+end
+
+function changeDice(rTriggerData, rEventData, sDisplay, fGetResult)
 	local fSelect = nil;
-	local nIndexToReplace;
+	local nIndicesToReplace = {};
 	local nExtremity;
 	if rTriggerData.sSelection == "lowest_dice" then
 		nExtremity = 10000;
 		fSelect = function(nCurrent, nIndex)
 			if nCurrent < nExtremity then
 				nExtremity = nCurrent;
-				nIndexToReplace = nIndex;
+				nIndicesToReplace[1] = nIndex;
 			end
 		end
 	elseif rTriggerData.sSelection == "highest_dice" then
@@ -166,7 +217,7 @@ function rerollDice(rTriggerData, rEventData)
 		fSelect = function(nCurrent, nIndex)
 			if nCurrent > nExtremity then
 				nExtremity = nCurrent;
-				nIndexToReplace = nIndex;
+				nIndicesToReplace[1] = nIndex;
 			end
 		end
 	end
@@ -177,16 +228,15 @@ function rerollDice(rTriggerData, rEventData)
 				fSelect(rDie.result, nIndex);
 			elseif rTriggerData.sSelection ~= "matching_dice" or
 				TriggerData.resolveComparison(rDie.result, rTriggerData.nCompareAgainst, rTriggerData.sComparison) then
-					rEventData.rRoll.sDesc = rEventData.rRoll.sDesc .. " [REROLL " .. rDie.result .. "]";
-					rDie.result = DiceManager.evalDie(rDie.type);
+					table.insert(nIndicesToReplace, nIndex);
 			end
 		end
 	end
 
-	if nIndexToReplace then
-		local rDie = rEventData.rRoll.aDice[nIndexToReplace];
-		rEventData.rRoll.sDesc = rEventData.rRoll.sDesc .. " [REROLL " .. rDie.result .. "]";
-		rDie.result = DiceManager.evalDie(rDie.type);
+	for _,nIndex in ipairs(nIndicesToReplace) do
+		local rDie = rEventData.rRoll.aDice[nIndex];
+		rEventData.rRoll.sDesc = rEventData.rRoll.sDesc .. " [" .. sDisplay .. " " .. rDie.result .. "]";
+		rDie.result = fGetResult(rDie.type);
 	end
 end
 

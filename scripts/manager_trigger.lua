@@ -142,7 +142,7 @@ function registerTrigger(nodeTrigger)
 	local rTrigger = loadTriggerFromNode(nodeTrigger);
 	tRegisteredTriggers[nodeTrigger] = rTrigger;
 
-	for sEventName,rEvent in pairs(rTrigger.tEvents) do
+	for sEventName,_ in pairs(rTrigger.tEventLists) do
 		local tEventTriggers = tRegisteredEventTriggers[sEventName];
 		if not tEventTriggers then
 			tEventTriggers = {};
@@ -158,7 +158,7 @@ function unregisterTrigger(nodeTrigger)
 		return;
 	end
 	
-	for sEventName,rEvent in pairs(rTrigger.tEvents) do
+	for sEventName,_ in pairs(rTrigger.tEventLists) do
 		local tEventTriggers = tRegisteredEventTriggers[sEventName];
 		if tEventTriggers then
 			tEventTriggers[nodeTrigger] = nil;
@@ -170,12 +170,17 @@ end
 
 function loadTriggerFromNode(nodeTrigger)
 	local rTrigger = {
-		tEvents = {},
+		tEventLists = {},
 		aActions = {}
 	};
 	for _,nodeEvent in pairs(DB.getChildren(nodeTrigger, "events")) do
 		local rEvent = loadTriggerEventFromNode(nodeEvent);
-		rTrigger.tEvents[rEvent.sName] = rEvent;
+		local aEvents = rTrigger.tEventLists[rEvent.sName];
+		if not aEvents then
+			aEvents = {};
+			rTrigger.tEventLists[rEvent.sName] = aEvents;
+		end
+		table.insert(aEvents, rEvent);
 	end
 	for _,nodeAction in pairs(DB.getChildren(nodeTrigger, "actions")) do
 		local rAction = loadTriggerActionFromNode(nodeAction);
@@ -200,7 +205,8 @@ function loadTriggerConditionFromNode(nodeCondition)
 	-- TODO invertibility
 	local rCondition = {
 		sName = DB.getValue(nodeCondition, "conditionname", "");
-		rData = loadParametersFromNode(nodeCondition)
+		rData = loadParametersFromNode(nodeCondition),
+		bInverted = DB.getValue(nodeCondition, "inverted", 0) ~= 0,
 	};
 	return rCondition;
 end
@@ -218,6 +224,9 @@ function loadParametersFromNode(nodeContainer)
 	for _,nodeParameter in pairs(DB.getChildren(nodeContainer, "parameters")) do
 		local sName = DB.getValue(nodeParameter, "name", "");
 		local vValue = DB.getValue(nodeParameter, "value");
+		if DB.getValue(nodeParameter, "type") == "bool" then
+			vValue = vValue ~= 0;
+		end
 		tParameters[sName] = vValue;
 	end
 	return tParameters;
@@ -227,22 +236,25 @@ end
 function fireEvent(sEventName, rEventData)
 	local tEventTriggers = tRegisteredEventTriggers[sEventName];
 	for _,rTrigger in pairs(tEventTriggers or {}) do
-		local bConditionsMet = true;
-		for _,rCondition in ipairs(rTrigger.tEvents[sEventName].aConditions) do
-			local rConditionDefinition = tConditionDefinitions[rCondition.sName];
-			if not (rConditionDefinition and rConditionDefinition.fCondition(rCondition.rData, rEventData)) then
-				bConditionsMet = false;
-				break;
+		for _,rEvent in ipairs(rTrigger.tEventLists[sEventName]) do
+			local bConditionsMet = true;
+			for _,rCondition in ipairs(rEvent.aConditions) do
+				local rConditionDefinition = tConditionDefinitions[rCondition.sName];
+				if not (rConditionDefinition and (rCondition.bInverted ~= rConditionDefinition.fCondition(rCondition.rData, rEventData))) then
+					Debug.chat("condition not met - " .. rCondition.sName)
+					bConditionsMet = false;
+					break;
+				end
 			end
-		end
-		if not bConditionsMet then
-			break;
-		end
 
-		for _,rAction in ipairs(rTrigger.aActions or {}) do
-			local rActionDefinition = tActionDefinitions[rAction.sName];
-			if rActionDefinition then
-				rActionDefinition.fAction(rAction.rData, rEventData);
+			if bConditionsMet then
+				Debug.chat("fireEvent", rTrigger.aActions)
+				for _,rAction in ipairs(rTrigger.aActions or {}) do
+					local rActionDefinition = tActionDefinitions[rAction.sName];
+					if rActionDefinition then
+						rActionDefinition.fAction(rAction.rData, rEventData);
+					end
+				end
 			end
 		end
 	end

@@ -7,13 +7,13 @@ local node;
 local bUpdating = false;
 
 function onInit()
+	super.onInit();
 	self.onSelect = onValueSelected;
 	node = window.getDatabaseNode().createChild(getName(), "string");
 	DB.addHandler(node.getPath(), "onUpdate", onNodeUpdate);
 end
 
 function configure(rParameterInfo, aEventParameters)
-	-- TODO handle non-resource strings (e.g. dice actions)
 	for _,vDefinition in ipairs(rParameterInfo.aDefinedValues) do
 		if type(vDefinition) == "string" then
 			addValue(vDefinition);
