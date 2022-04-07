@@ -6,7 +6,7 @@ This is accomplished through the use of a new Active Triggers window accessible 
 Two modules are included: "TMT Core Examples" and "TMT D&D 5E Examples" which include a handful of trigger definitions (accessible from the Triggers in the Campaign section of the sidebar) demonstrating how this extension may be used. To use these examples in your game simply drag them to the Active Triggers window. The following examples are provided:
 
 * We Hate Ones - CoreRPG - Any time a roll is made by a creature that has a "Hates Ones" effect active in the combat tracker, all of the 1s in the roll will be replaced with 2s.
-* Death Ward - D&D 5E - E+nables the functionality of the Death Ward spell for any creature than has a "Death Ward" effect active in the combat tracker.
+* Death Ward - D&D 5E - Enables the functionality of the Death Ward spell for any creature than has a "Death Ward" effect active in the combat tracker.
 * Lucky (Halfling) - D&D 5E - Automates the Lucky trait for Halflings, rerolling all 1s for attack rolls, ability checks, and saving throws.
 
 **NOTE** As this is a preview release there may be occasional hiccups in functionality and many quality of life features have not yet been implemented.
