@@ -291,17 +291,7 @@
 				<listmaxsize>12</listmaxsize>
 				<listdirection>down</listdirection>
 			</comboboxc>
-
-			<windowlist name="parameters">
-				<anchored to='contentanchor'>
-					<left />
-					<top anchor="bottom" relation="relative" offset="5"	/>
-					<right />
-				</anchored>
-				<class>empty_trigger_parameter</class>
-				<noscroll />
-				<skipempty />
-			</windowlist>
+			<parameterlist />
 		</sheetdata>
 	</windowclass>
 
@@ -339,17 +329,7 @@
 				<listmaxsize>12</listmaxsize>
 				<listdirection>down</listdirection>
 			</comboboxc>
-
-			<windowlist name="parameters">
-				<anchored to='contentanchor'>
-					<left />
-					<top anchor="bottom" relation="relative" offset="5"	/>
-					<right />
-				</anchored>
-				<class>empty_trigger_parameter</class>
-				<noscroll />
-				<skipempty />
-			</windowlist>
+			<parameterlist />
 		</sheetdata>
 	</windowclass>
 	
@@ -470,6 +450,20 @@
 			<child merge="delete" />
 			<sortby merge="delete" />
 		</list_column>
+	</template>
+
+	<template name="parameterlist">
+		<windowlist name="parameters">
+			<anchored to='contentanchor'>
+				<left />
+				<top anchor="bottom" relation="relative" offset="5"	/>
+				<right />
+			</anchored>
+			<script file="triggers/scripts/parameterlist.lua" />
+			<class>empty_trigger_parameter</class>
+			<noscroll />
+			<skipempty />
+		</windowlist>
 	</template>
 
 	<template name="label_triggerparameter">

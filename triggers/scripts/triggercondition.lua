@@ -8,7 +8,6 @@ local aEventParameters;
 
 function onInit()
 	conditionname.onSelect = onConditionNameSelected;
-	parameters.onFilter = onFilterParameters;
 	DB.addHandler(getDatabaseNode().getPath("conditionname"), "onUpdate", onConditionNameChanged);
 end
 
@@ -18,9 +17,7 @@ end
 
 function update(bReadOnly)
 	conditionname.setComboBoxReadOnly(bReadOnly);
-	for _,winParameter in ipairs(parameters.getWindows()) do
-		winParameter.update(bReadOnly);
-	end
+	parameters.update(bReadOnly);
 end
 
 function setEventName(sEventName)
@@ -34,7 +31,7 @@ function setEventName(sEventName)
 end
 
 function onConditionNameChanged(nodeConditionName)
-	setConditionName(nodeConditionName.getValue());
+	setConditionName(nodeConditionName.getValue(), true);
 end
 
 function onConditionNameSelected(sSelection)
@@ -44,7 +41,7 @@ function onConditionNameSelected(sSelection)
 	bUpdatingName = false;
 end
 
-function setConditionName(sConditionName)
+function setConditionName(sConditionName, bRebuild)
 	if not bUpdatingName then
 		if (sConditionName or "") == "" then
 			conditionname.setListIndex(1);
@@ -59,43 +56,14 @@ function setConditionName(sConditionName)
 		end
 	end
 
-	rebuildParameters(sConditionName);
+	rebuildParameters(sConditionName, bRebuild);
 end
 
-function rebuildParameters(sConditionName)
-	clearParameters();
-	buildParameters(sConditionName);
-end
-
-function clearParameters()
-	rConditionData = {};
-	DB.deleteChild(getDatabaseNode(), "parameters");
-end
-
-function buildParameters(sConditionName)
+function rebuildParameters(sConditionName, bRebuild)
 	local rCondition = TriggerManager.getConditionDefinition(sConditionName);
 	if not rCondition then
 		return;
 	end
 
-	local nodeParameters = DB.createChild(getDatabaseNode(), "parameters");
-	for _,rParameterInfo in ipairs(rCondition.aConfigurableParameters or {}) do
-		local nodeParameter = nodeParameters.createChild();
-		local winParameter = parameters.createWindowWithClass("trigger_parameter_" .. rParameterInfo.sType, nodeParameter);
-		winParameter.configure(rParameterInfo, aEventParameters);
-	end
-
-	onParameterChanged();
-end
-
-function onParameterChanged()
-	for _,winParameter in pairs(parameters.getWindows()) do
-		local sParameterName, vValue = winParameter.getNameAndValue();
-		rConditionData[sParameterName] = vValue;
-	end
-	parameters.applyFilter();
-end
-
-function onFilterParameters(winParameter)
-	return winParameter.shouldBeVisible(rConditionData);
+	parameters.initializeParameters(rCondition.aConfigurableParameters, aEventParameters, bRebuild)
 end

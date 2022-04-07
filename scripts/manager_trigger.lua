@@ -11,7 +11,25 @@
 local tEventDefinitions = {};
 local tConditionDefinitions = {};
 local tActionDefinitions = {};
-local tRegisteredEventTriggers = {};
+local tRegisteredTriggers = {};
+local tRegisteredEventTriggers = {}
+
+function onInit()
+	DB.addHandler("activetrigger.*", "onChildUpdate", onActiveTriggerUpdated);
+	DB.addHandler("activetrigger.*", "onDelete", onActiveTriggerDeleted);
+
+	for _,nodeTrigger in pairs(DB.getChildren("activetrigger")) do
+		registerTrigger(nodeTrigger);
+	end
+end
+
+function onActiveTriggerUpdated(nodeParent, bListchanged)
+	registerTrigger(nodeParent);
+end
+
+function onActiveTriggerDeleted(nodeToBeDeleted)
+	unregisterTrigger(nodeTrigger);
+end
 
 function defineEvent(rEvent)
 	tEventDefinitions[rEvent.sName] = rEvent;
@@ -121,31 +139,47 @@ function hasRequiredParameters(aRequiredParameters, aEventParameters)
 end	
 
 function registerTrigger(nodeTrigger)
-	local nTriggerId = getNewTriggerId();
+	local rTrigger = loadTriggerFromNode(nodeTrigger);
+	tRegisteredTriggers[nodeTrigger] = rTrigger;
+
 	for sEventName,rEvent in pairs(rTrigger.tEvents) do
 		local tEventTriggers = tRegisteredEventTriggers[sEventName];
 		if not tEventTriggers then
 			tEventTriggers = {};
 			tRegisteredEventTriggers[sEventName] = tEventTriggers;
 		end
-
-		tEventTriggers[nTriggerId] = rTrigger;
+		tEventTriggers[nodeTrigger] = rTrigger;
 	end
-	return nTriggerId;
 end
+
+function unregisterTrigger(nodeTrigger)
+	local rTrigger = tRegisteredTriggers[nodeTrigger];
+	if not rTrigger then
+		return;
+	end
+	
+	for sEventName,rEvent in pairs(rTrigger.tEvents) do
+		local tEventTriggers = tRegisteredEventTriggers[sEventName];
+		if tEventTriggers then
+			tEventTriggers[nodeTrigger] = nil;
+		end
+	end
+	tRegisteredTriggers[nodeTrigger] = nil;
+end
+
 
 function loadTriggerFromNode(nodeTrigger)
 	local rTrigger = {
 		tEvents = {},
-		tActions = {}
+		aActions = {}
 	};
 	for _,nodeEvent in pairs(DB.getChildren(nodeTrigger, "events")) do
 		local rEvent = loadTriggerEventFromNode(nodeEvent);
 		rTrigger.tEvents[rEvent.sName] = rEvent;
 	end
 	for _,nodeAction in pairs(DB.getChildren(nodeTrigger, "actions")) do
-		local rAction = loadTriggerActionFromNode(nodeEvent);
-		rTrigger.tActions[rAction.sName] = rAction;
+		local rAction = loadTriggerActionFromNode(nodeAction);
+		table.insert(rTrigger.aActions, rAction);
 	end
 	return rTrigger;
 end
@@ -157,7 +191,7 @@ function loadTriggerEventFromNode(nodeEvent)
 	};
 	for _,nodeCondition in pairs(DB.getChildren(nodeEvent, "conditions")) do
 		local rCondition = loadTriggerConditionFromNode(nodeCondition);
-		table.insert(rEvent.aCondition, rCondition);
+		table.insert(rEvent.aConditions, rCondition);
 	end
 	return rEvent;
 end
@@ -166,44 +200,49 @@ function loadTriggerConditionFromNode(nodeCondition)
 	-- TODO invertibility
 	local rCondition = {
 		sName = DB.getValue(nodeCondition, "conditionname", "");
-		rData = loadParameters(nodeCondition)
+		rData = loadParametersFromNode(nodeCondition)
 	};
 	return rCondition;
 end
 
-function loadParameters(nodeContainer)
-	local tParameters = {};
-	for _,nodeParameter in pairs(DB.getChildren(nodeContainer, "parameters")) do
-		tParameters[nodeParameter.getName()] = nodeParameter.getValue();
-	end
-	return tParameters;
+function loadTriggerActionFromNode(nodeAction)
+	local rAction = {
+		sName = DB.getValue(nodeAction, "actionname", "");
+		rData = loadParametersFromNode(nodeAction)
+	};
+	return rAction;
 end
 
-function loadTriggerActionFromNode(nodeCondition)
+function loadParametersFromNode(nodeContainer)
+	local tParameters = {};
+	for _,nodeParameter in pairs(DB.getChildren(nodeContainer, "parameters")) do
+		local sName = DB.getValue(nodeParameter, "name", "");
+		local vValue = DB.getValue(nodeParameter, "value");
+		tParameters[sName] = vValue;
+	end
+	return tParameters;
 end
 
 --TODO break this down if possible
 function fireEvent(sEventName, rEventData)
 	local tEventTriggers = tRegisteredEventTriggers[sEventName];
-	if tEventTriggers then
-		for _,rTrigger in pairs(tEventTriggers) do
-			local bConditionsMet = true;
-			for _,rCondition in ipairs(rTrigger.tEvents[sEventName].aConditions) do
-				local rConditionDefinition = tConditionDefinitions[rCondition.sName];
-				if not (rConditionDefinition and rConditionDefinition.fCondition(rCondition.rData, rEventData)) then
-					bConditionsMet = false;
-					break;
-				end
-			end
-			if not bConditionsMet then
+	for _,rTrigger in pairs(tEventTriggers or {}) do
+		local bConditionsMet = true;
+		for _,rCondition in ipairs(rTrigger.tEvents[sEventName].aConditions) do
+			local rConditionDefinition = tConditionDefinitions[rCondition.sName];
+			if not (rConditionDefinition and rConditionDefinition.fCondition(rCondition.rData, rEventData)) then
+				bConditionsMet = false;
 				break;
 			end
-			
-			for _,rAction in ipairs(rTrigger.aActions) do
-				local rActionDefinition = tActionDefinitions[rAction.sName];
-				if rActionDefinition then
-					rActionDefinition.fAction(rAction.rData, rEventData);
-				end
+		end
+		if not bConditionsMet then
+			break;
+		end
+
+		for _,rAction in ipairs(rTrigger.aActions or {}) do
+			local rActionDefinition = tActionDefinitions[rAction.sName];
+			if rActionDefinition then
+				rActionDefinition.fAction(rAction.rData, rEventData);
 			end
 		end
 	end

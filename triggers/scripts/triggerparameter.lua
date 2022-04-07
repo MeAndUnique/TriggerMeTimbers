@@ -22,7 +22,7 @@ function configure(rNewParameterInfo, sNewEventParameters)
 	if value.configure then
 		value.configure(rParameterInfo, aEventParameters);
 	end
-	value.onValueChanged = windowlist.window.onParameterChanged;
+	value.onValueChanged = windowlist.onParameterChanged;
 end
 
 function getNameAndValue()

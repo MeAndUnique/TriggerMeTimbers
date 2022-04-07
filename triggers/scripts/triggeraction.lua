@@ -16,9 +16,7 @@ end
 
 function update(bReadOnly)
 	actionname.setComboBoxReadOnly(bReadOnly);
-	for _,winParameter in ipairs(parameters.getWindows()) do
-		winParameter.update(bReadOnly);
-	end
+	parameters.update(bReadOnly);
 end
 
 function updateEvents(aEventNames)
@@ -28,26 +26,27 @@ function updateEvents(aEventNames)
 	end
 
 	local sActionName = DB.getValue(getDatabaseNode(), "actionname");
-	setActionName(sActionName);
+	setActionName(sActionName, false);
 end
 
 function onActionNameChanged(nodeActionName)
-	setActionName(nodeActionName.getValue());
+	setActionName(nodeActionName.getValue(), true);
 end
 
 function onActionNameSelected(sSelection)
 	bUpdatingName = true;
+	DB.deleteChild(getDatabaseNode(), "parameters");
 	-- combobox defaults to display value, not data value
 	DB.setValue(getDatabaseNode(), "actionname", "string", actionname.getSelectedValue());
 	bUpdatingName = false;
 end
 
-function setActionName(sActionName)
+function setActionName(sActionName, bRebuild)
 	if not bUpdatingName then
 		if (sActionName or "") == "" then
 			actionname.setListIndex(1);
 			sActionName = actionname.getSelectedValue();
-			DB.setValue(getDatabaseNode(), "eventname", "string", sActionName);
+			DB.setValue(getDatabaseNode(), "actionname", "string", sActionName);
 		elseif actionname.hasValue(sActionName) then
 			-- It would be nice if comboboxes had full support for key/value pair data.
 			actionname.setListValue(Interface.getString(sActionName));
@@ -57,43 +56,14 @@ function setActionName(sActionName)
 		end
 	end
 
-	rebuildParameters(sActionName);
+	rebuildParameters(sActionName, bRebuild);
 end
 
-function rebuildParameters(sActionName)
-	clearParameters();
-	buildParameters(sActionName);
-end
-
-function clearParameters()
-	rActionData = {};
-	DB.deleteChild(getDatabaseNode(), "parameters");
-end
-
-function buildParameters(sActionName)
+function rebuildParameters(sActionName, bRebuild)
 	local rAction = TriggerManager.getActionDefinition(sActionName);
 	if not rAction then
 		return;
 	end
 
-	local nodeParameters = DB.createChild(getDatabaseNode(), "parameters");
-	for _,rParameterInfo in ipairs(rAction.aConfigurableParameters or {}) do
-		local nodeParameter = nodeParameters.createChild();
-		local winParameter = parameters.createWindowWithClass("trigger_parameter_" .. rParameterInfo.sType, nodeParameter);
-		winParameter.configure(rParameterInfo, aEventParameters);
-	end
-
-	onParameterChanged();
-end
-
-function onParameterChanged()
-	for _,winParameter in pairs(parameters.getWindows()) do
-		local sParameterName, vValue = winParameter.getNameAndValue();
-		rActionData[sParameterName] = vValue;
-	end
-	parameters.applyFilter();
-end
-
-function onFilterParameters(winParameter)
-	return winParameter.shouldBeVisible(rActionData);
+	parameters.initializeParameters(rAction.aConfigurableParameters, aEventParameters, bRebuild);
 end

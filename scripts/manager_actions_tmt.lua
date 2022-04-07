@@ -146,7 +146,7 @@ function rollIsValue(rTriggerData, rEventData)
 		nTotal = nTotal - rEventData.rRoll.nMod;
 	end
 
-	return TriggerHelper.resolveComparison(nTotal, rTriggerData.nCompareAgainst, rTriggerData.sComparison);
+	return TriggerData.resolveComparison(nTotal, rTriggerData.nCompareAgainst, rTriggerData.sComparison);
 end
 
 function rerollDice(rTriggerData, rEventData)
@@ -176,7 +176,7 @@ function rerollDice(rTriggerData, rEventData)
 			if fSelect then
 				fSelect(rDie.result, nIndex);
 			elseif rTriggerData.sSelection ~= "matching_dice" or
-				TriggerHelper.resolveComparison(rDie.result, rTriggerData.nCompareAgainst, rTriggerData.sComparison) then
+				TriggerData.resolveComparison(rDie.result, rTriggerData.nCompareAgainst, rTriggerData.sComparison) then
 					rEventData.rRoll.sDesc = rEventData.rRoll.sDesc .. " [REROLL " .. rDie.result .. "]";
 					rDie.result = DiceManager.evalDie(rDie.type);
 			end
