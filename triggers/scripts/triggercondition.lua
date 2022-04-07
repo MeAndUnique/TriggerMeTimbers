@@ -17,6 +17,7 @@ end
 
 function update(bReadOnly)
 	conditionname.setComboBoxReadOnly(bReadOnly);
+	inverted.setReadOnly(bReadOnly);
 	parameters.update(bReadOnly);
 end
 

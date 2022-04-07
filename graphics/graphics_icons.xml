@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<root>
+	<icon name="TriggerMeTimbers" file="graphics/icons/TriggerMeTimbers.png" />
+	<icon name="sidebar_icon_recordtype_trigger" file="graphics/icons/trigger.png" />
+	<icon name="active_trigger" file="graphics/icons/lightning.png" />
+</root>

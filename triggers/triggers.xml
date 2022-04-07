@@ -1,96 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <root>
-	<windowclass name="triggers">
-		<frame>utilitybox3</frame>
-		<placement>
-			<size width="450" height="450" />
-		</placement>
-		<sizelimits>
-			<minimum width="450" height="450" />
-			<dynamic />
-		</sizelimits>
-		<minimize>minimized_reference</minimize>
-		<softclose />
-		<nodelete />
-		<script file="triggers/scripts/triggers.lua" />
-		<sheetdata>
-			<windowtitlebar name="title">
-				<resource>triggers_window_title</resource>
-			</windowtitlebar>
-			<anchor_title_utilitybox3 name="contentanchor" />
-			<anchor_bottom_utilitybox3 name="bottomanchor" />
-			<genericcontrol name="listbottomanchor">
-				<anchored height="0">
-					<left offset="10" />
-					<right offset="-10" />
-					<bottom offset="-55" />
-				</anchored>
-			</genericcontrol>
-			<genericcontrol name="pageanchor">
-				<anchored to="contentanchor" height="24">
-					<left offset="10" />
-					<right offset="-10" />
-					<bottom parent="listbottomanchor" anchor="top" relation="relative" offset="-5" />
-				</anchored>
-			</genericcontrol>
-
-			<hsc name="filter_category" />
-			<masterindex_category_label name="label_category" />
-			<masterindex_category_filter_label name="filter_category_label" />
-			<masterindex_category_list name="list_category" />
-			<masterindex_category_scroll name="scroll_category" />
-			<masterindex_category_detail name="button_category_detail" />
-			<masterindex_category_iedit name="button_category_iedit" />
-			<masterindex_category_iadd name="button_category_iadd" />
-
-			<windowlist name="list">
-				<anchored to="contentanchor">
-					<top anchor="bottom" relation="relative" offset="20" />
-					<left />
-					<right />
-					<bottom parent="bottomanchor" anchor="top" relation="relative" offset="-70" />
-				</anchored>
-				<frame name="groupbox" offset="15,15,20,15" />
-				<child></child>
-				<child><backcolor>1A40301E</backcolor></child>
-				<class>triggerlist_item</class>
-				<allowdelete />
-				<skipempty />
-				<!-- TODO <script file="campaign/scripts/masterindex_list.lua" /> -->
-			</windowlist>
-
-			<list_page_info />
-			<list_page_start />
-			<list_page_prev />
-			<list_page_next />
-			<list_page_end />
-
-			<anchor_utility_controls />
-			<button_iedit_utility />
-			<button_iadd_utility />
-			<filter_utility />
-			
-			<resize_utilitybox3 />
-			<!-- TODO <helper_effects /> -->
-			<close_utilitybox3 />
-		</sheetdata>
-	</windowclass>
-
-	<windowclass name="triggerlist_item">
-		<margins control="0,0,0,2" />
-		<sheetdata>
-			<masterindexitem_link name="link" />
-
-			<masterindexitem_anchor_right name="rightanchor" />
-			<masterindexitem_idelete name="idelete" />
-			<masterindexitem_access name="access" />
-			<masterindexitem_category name="category" />
-			
-			<masterindexitem_name name="name" />
-		</sheetdata>
-	</windowclass>
-
 	<windowclass name="masterindexitem_activetrigger">
 		<margins control="0,0,0,2" />
 		<script file="triggers/scripts/masterindextriggeritem_window.lua" />
@@ -105,7 +15,6 @@
 		</sheetdata>
 	</windowclass>
 
-	<!-- TODO relocate -->
 	<windowclass name="trigger">
 		<frame>recordsheet</frame>
 		<placement>
@@ -117,6 +26,7 @@
 		</sizelimits>
 		<tooltip field="name" />
 		<gmexport>trigger</gmexport>
+		<script file="triggers/scripts/trigger.lua" />
 		<sheetdata>
 			<sub_record_header name="header">
 				<class>trigger_header</class>
@@ -179,7 +89,7 @@
 				<class>trigger_event_item</class>
 			</list_triggercomponents>
 
-			<line_column name="divider" />
+			<!-- <line_column name="divider" /> -->
 
 			<header_column name="header_actions">
 				<static textres="trigger_header_actions" />
@@ -457,71 +367,4 @@
 			</basicstring>
 		</sheetdata>
 	</windowclass>
-
-	<!-- TODO relocate -->
-	<template name="list_triggercomponents">
-		<list_column>
-			<anchored merge="delete" />
-			<child merge="delete" />
-			<sortby merge="delete" />
-		</list_column>
-	</template>
-
-	<template name="parameterlist">
-		<windowlist name="parameters">
-			<anchored to='contentanchor'>
-				<left />
-				<top anchor="bottom" relation="relative" offset="5"	/>
-				<right />
-			</anchored>
-			<script file="triggers/scripts/parameterlist.lua" />
-			<class>empty_trigger_parameter</class>
-			<noscroll />
-			<skipempty />
-		</windowlist>
-	</template>
-
-	<template name="label_triggerparameter">
-		<label>
-			<anchored to="contentanchor" width="100">
-				<left />
-				<top anchor="bottom" relation="current" offset="7" />
-			</anchored>
-		</label>
-	</template>
-	<template name="triggerparameter_combo">
-		<comboboxc>
-			<script file="triggers/scripts/parametercombobox.lua" />
-			<anchored to="contentanchor">
-				<left offset="110" />
-				<top anchor="bottom" relation="relative" offset="7" />
-				<right />
-			</anchored>
-		</comboboxc>
-	</template>
-	<template name="triggerparameter_bool">
-		<button_checkbox>
-			<anchored to="contentanchor" width="20" height="20">
-				<left offset="110" />
-				<top anchor="bottom" relation="relative" offset="7" />
-			</anchored>
-		</button_checkbox>
-	</template>
-	<template name="triggerparameter_number">
-		<basicnumber>
-			<anchored to="contentanchor" width="50">
-				<left offset="110" />
-				<top anchor="bottom" relation="relative" offset="7" />
-			</anchored>
-		</basicnumber>
-	</template>
-	<template name="triggerparameter_string">
-		<basicstring>
-			<anchored to="contentanchor">
-				<left offset="110" />
-				<top anchor="bottom" relation="relative" offset="7" />
-				<right />
-			</anchored>
-		</basicstring>
-	</template>
 </root>

@@ -132,19 +132,16 @@ function initializeActions()
 end
 
 function resolveAction(rSource, rTarget, rRoll)
-	Debug.chat("resolveAction", rSource, rTarget, rRoll)
 	local rEventData = {rSource=rSource, rTarget=rTarget, rRoll=rRoll};
 	TriggerManager.fireEvent(rDiceRolledEvent.sName, rEventData);
 	return resolveActionOriginal(rSource, rTarget, rRoll);
 end
 
 function rollIsType(rTriggerData, rEventData)
-	Debug.chat("rollIsType", rTriggerData, rEventData)
 	return rTriggerData.sType == rEventData.rRoll.sType;
 end
 
 function rollIsValue(rTriggerData, rEventData)
-	Debug.chat("rollIsValue", rTriggerData, rEventData)
 	-- TODO Halfling luck can reroll either one of the dice, but not both
 	-- may want to with adv dropping a 1, since the high roll could still be low
 	-- Could consider bool for calculating before/after dropping the die, but then any replacement action gets more complicated
@@ -152,16 +149,13 @@ function rollIsValue(rTriggerData, rEventData)
 		-- All/Lowest/Highest option on action could resolve that
 		-- How to handle post-drop things then, such as reliable talent etc?
 	if rTriggerData.bIncludeAdvantage and ActionsManager2 and ActionsManager2.decodeAdvantage then
-		Debug.chat("wat")
 		ActionsManager2.decodeAdvantage(rEventData.rRoll);
 	end
 
 	-- TODO probably can clean this up a fair bit
 	local bResult = false;
 	if rTriggerData.sMatchAgainst == "any_dice" then
-		Debug.chat("rollIsValue - any", rEventData.rRoll.aDice)
 		for _,rDie in ipairs(rEventData.rRoll.aDice) do
-			Debug.chat("rollIsValue - any - die", rDie)
 			if not rDie.dropped then
 				if TriggerData.resolveComparison(rDie.result, rTriggerData.nCompareAgainst, rTriggerData.sComparison) then
 					bResult = true;

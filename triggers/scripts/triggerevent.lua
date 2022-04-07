@@ -29,6 +29,11 @@ function update(bReadOnly)
 			conditions_iadd.setVisible(true);
 		end
 	end
+
+	conditions.setReadOnly(bReadOnly);
+	for _,winCondition in ipairs(conditions.getWindows()) do
+		winCondition.update(bReadOnly);
+	end
 end
 
 function getEventName()

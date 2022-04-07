@@ -15,6 +15,10 @@ local tRegisteredTriggers = {};
 local tRegisteredEventTriggers = {}
 
 function onInit()
+	if Session.IsHost then
+		DB.createNode("activetrigger").setPublic(true);
+	end
+
 	DB.addHandler("activetrigger.*", "onChildUpdate", onActiveTriggerUpdated);
 	DB.addHandler("activetrigger.*", "onDelete", onActiveTriggerDeleted);
 
@@ -241,14 +245,12 @@ function fireEvent(sEventName, rEventData)
 			for _,rCondition in ipairs(rEvent.aConditions) do
 				local rConditionDefinition = tConditionDefinitions[rCondition.sName];
 				if not (rConditionDefinition and (rCondition.bInverted ~= rConditionDefinition.fCondition(rCondition.rData, rEventData))) then
-					Debug.chat("condition not met - " .. rCondition.sName)
 					bConditionsMet = false;
 					break;
 				end
 			end
 
 			if bConditionsMet then
-				Debug.chat("fireEvent", rTrigger.aActions)
 				for _,rAction in ipairs(rTrigger.aActions or {}) do
 					local rActionDefinition = tActionDefinitions[rAction.sName];
 					if rActionDefinition then

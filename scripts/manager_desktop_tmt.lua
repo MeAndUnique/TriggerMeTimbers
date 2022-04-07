@@ -4,9 +4,12 @@
 --
 
 function onInit()
-	DesktopManager.registerSidebarToolButton({
-		tooltipres = "sidebar_tooltip_triggers",
-		class = "masterindex", -- TODO or "triggers"
-		path = "activetrigger",
-	});
+	if Session.IsHost then
+		DesktopManager.registerSidebarToolButton({
+			tooltipres = "sidebar_tooltip_active_triggers",
+			class = "masterindex",
+			path = "activetrigger",
+			sIcon = "active_trigger",
+		});
+	end
 end

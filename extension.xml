@@ -47,14 +47,13 @@ Wood Board Vectors by Vecteezy
 		<script name="TriggerData" file="scripts/data_trigger.lua" />
 		<script name="TriggerManager" file="scripts/manager_trigger.lua" />
 
-		<includefile source="strings/strings.xml" />
 		<includefile source="triggers/triggers.xml" />
+		<includefile source="triggers/template_triggers.xml" />
 
-		<!-- TODO trigger sidebar icon(s) -->
-		
-		<icon name="TMT_icon" file="graphics/icons/TriggerMeTimbers.png" />
+		<includefile source="graphics/graphics_icons.xml" />
+		<includefile source="strings/strings.xml" />
 	</base>
 
-	<announcement text="Trigger Me Timbers dev_version by MeAndUnique." icon="TMT_icon" font="emotefont" />
+	<announcement text="Trigger Me Timbers dev_version by MeAndUnique." icon="TriggerMeTimbers" font="emotefont" />
 
 </root>

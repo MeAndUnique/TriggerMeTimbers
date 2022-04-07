@@ -9,12 +9,13 @@ function onInit()
 	actions.onEntryAdded = onActionAdded;
 	bInitialized = true;
 	onEventChanged();
+	update();
 end
 
 function update()
 	local nodeRecord = getDatabaseNode();
 	local bReadOnly = WindowManager.getReadOnlyState(nodeRecord);
-	
+
 	if bReadOnly then
 		if events_iedit then
 			events_iedit.setValue(0);
@@ -35,6 +36,16 @@ function update()
 			actions_iedit.setVisible(true);
 			actions_iadd.setVisible(true);
 		end
+	end
+
+	events.setReadOnly(bReadOnly);
+	for _,winEvent in ipairs(events.getWindows()) do
+		winEvent.update(bReadOnly);
+	end
+
+	actions.setReadOnly(bReadOnly);
+	for _,winAction in ipairs(actions.getWindows()) do
+		winAction.update(bReadOnly);
 	end
 end
 

@@ -7,6 +7,7 @@
 	<string name="library_recordtype_empty_trigger">&#171; New Trigger &#187;</string>
 
 	<string name="triggers_window_title">Triggers</string>
+	<string name="sidebar_tooltip_active_triggers">Active Triggers</string>
 	<string name="sidebar_tooltip_triggers">Triggers</string>
 
 	<string name="trigger_header_events">Events</string>
