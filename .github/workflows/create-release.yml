@@ -35,6 +35,6 @@ jobs:
     - name: Create Release
       uses: ncipollo/release-action@v1
       with:
-        artifacts: "TriggerMeTimbers.ext"
+        artifacts: "TriggerMeTimbers.ext, .resources/TriggerMeTimbersExample5E.mod, .resources/TriggerMeTimbersExampleCore.mod"
         token: ${{ secrets.GITHUB_TOKEN }}
         allowUpdates: true
