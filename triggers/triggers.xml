@@ -89,8 +89,6 @@
 				<class>trigger_event_item</class>
 			</list_triggercomponents>
 
-			<!-- <line_column name="divider" /> -->
-
 			<header_column name="header_actions">
 				<static textres="trigger_header_actions" />
 			</header_column>
@@ -164,6 +162,14 @@
 				<datasource>.conditions</datasource>
 				<class>trigger_condition_item</class>
 			</list_triggercomponents>
+
+			<line_column name="divider">
+				<anchored>
+					<left />
+					<top parent="conditions" anchor="bottom" offset="5" />
+					<right />
+				</anchored>
+			</line_column>
 		</sheetdata>
 	</windowclass>
 
@@ -253,6 +259,14 @@
 				<listdirection>down</listdirection>
 			</comboboxc>
 			<parameterlist />
+
+			<line_column name="divider">
+				<anchored>
+					<left />
+					<top parent="parameters" anchor="bottom" offset="5" />
+					<right />
+				</anchored>
+			</line_column>
 		</sheetdata>
 	</windowclass>
 	

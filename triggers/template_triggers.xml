@@ -6,7 +6,6 @@
 			<anchored merge="delete" />
 			<child merge="delete" />
 			<sortby merge="delete" />
-			<footer>separatorline</footer>
 		</list_column>
 	</template>
 

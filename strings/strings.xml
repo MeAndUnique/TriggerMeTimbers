@@ -41,6 +41,7 @@
 	<string name="comparison_parameter">Comparison</string>
 	<string name="compare_against_parameter">Compare Against</string>
 	<string name="creature_parameter">Creature</string>
+	<string name="die_replacement_parameter">Replace With</string>
 	<string name="die_selection_parameter">Die Selection</string>
 	<string name="effect_name_parameter">Effect Name</string>
 	<string name="include_advantage_parameter">Include Advantage</string>
