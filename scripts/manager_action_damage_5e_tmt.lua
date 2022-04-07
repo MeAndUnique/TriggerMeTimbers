@@ -46,39 +46,6 @@ function onInit()
 
 	initializeConditions();
 	intializeActions();
-
-	Interface.onDesktopInit = onDesktopInit;
-end
-
-function onDesktopInit()
-	Debug.chat("test:", type(Interface.getString("nonsense")), Interface.getString("nonsense"))
-	-- TODO remove debug code
-	-- TriggerManager.registerTrigger({
-	-- 	tEvents={
-	-- 		[rBeforeDamageTakenEvent.sName]={
-	-- 			aConditions={
-	-- 				{
-	-- 					sName = rTargetHasCurrentHitPointsCondition.sName,
-	-- 					rData = {sComparison="gt", nCompareAgainst=0},
-	-- 				},
-	-- 				{
-	-- 					sName = EffectManagerTMT.rTargetHasEffectCondition.sName,
-	-- 					rData = {sEffectName = "Death Ward"},
-	-- 				}
-	-- 			}
-	-- 		}
-	-- 	},
-	-- 	aActions={
-	-- 		{
-	-- 			sName = rEnsureRemainingHitpointsAction.sName,
-	-- 			rData = {nMinimum = 1, sMessage = "[DEATH WARD]"}
-	-- 		},
-	-- 		{
-	-- 			sName = EffectManagerTMT.rRemoveTargetEffectAction.sName,
-	-- 			rData = {sEffectName = "Death Ward"}
-	-- 		},
-	-- 	}
-	-- });
 end
 
 function initializeConditions()
@@ -109,7 +76,7 @@ function initializeConditions()
 					"number_parameter",
 					{
 						sValue = "target_hitpoints_parameter",
-						aRequiredParameters = {"nHitpoints"},
+						aRequiredParameters = {"rTarget"},
 					}
 				},
 			},
@@ -206,14 +173,15 @@ function targetHasCurrentHitpoints(rTriggerData, rEventData)
 	end
 
 	local nCurrent = getCurrentHitPoints(rEventData.rTarget);
-	return TriggerHelper.resolveComparison(nCurrent, rTriggerData.nCompareAgainst, rTriggerData.sComparison);
+	return TriggerData.resolveComparison(nCurrent, rTriggerData.nCompareAgainst, rTriggerData.sComparison);
 end
 
 function damageIsValue(rTriggerData, rEventData)
 	if rTriggerData.sCompareTo == "target_hitpoints_parameter" then
-		return TriggerHelper.resolveComparison(rEventData.nDamage, rEventData.nHitpoints, rTriggerData.sComparison);
+		local nCurrent = getCurrentHitPoints(rEventData.rTarget);
+		return TriggerData.resolveComparison(-rEventData.nDamage, nCurrent, rTriggerData.sComparison);
 	else
-		return TriggerHelper.resolveComparison(rEventData.nDamage, rTriggerData.nCompareAgainst, rTriggerData.sComparison);
+		return TriggerData.resolveComparison(-rEventData.nDamage, rTriggerData.nCompareAgainst, rTriggerData.sComparison);
 	end
 end
 
