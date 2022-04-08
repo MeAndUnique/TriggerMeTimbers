@@ -23,10 +23,12 @@ function configure(rParameterInfo, aEventParameters)
 			end
 		end
 	end
+	Debug.chat("configure", rParameterInfo, aEventParameters, node.getValue());
 	setComboValue(node.getValue());
 end
 
 function addValue(sValue)
+	-- TODO potentially add parameter info to be explicit about intent
 	local sResource = Interface.getString(sValue);
 	if sResource == "" then
 		sResource = nil;
@@ -57,7 +59,11 @@ function setComboValue(sValue)
 			DB.setValue(node.getPath(), "string", sValue);
 		elseif hasValue(sValue) then
 			-- It would be nice if comboboxes had full support for key/value pair data.
-			setListValue(Interface.getString(sValue)); -- TODO interface alternative.
+			for nIndex,sKnownValue in ipairs(getValues()) do
+				if sValue == sKnownValue then
+					setListIndex(nIndex);
+				end
+			end
 		else
 			setListValue(string.format(Interface.getString("unknown_parameter_error"), sValue));
 		end
