@@ -39,6 +39,8 @@ function initializeParameters(aConfigurableParameters, aEventParameters, bRebuil
 		local winParameter = createWindowWithClass("trigger_parameter_" .. rParameterInfo.sType, nodeParameter);
 		winParameter.configure(rParameterInfo, aEventParameters);
 	end
+
+	onParameterChanged();
 end
 
 function rebuildParameterNodes(windowNode, aConfigurableParameters)
@@ -49,8 +51,6 @@ function rebuildParameterNodes(windowNode, aConfigurableParameters)
 		DB.setValue(nodeParameter, "name", "string", rParameterInfo.sName);
 		DB.setValue(nodeParameter, "type", "string", rParameterInfo.sType);
 	end
-
-	onParameterChanged();
 end
 
 function onParameterChanged()
