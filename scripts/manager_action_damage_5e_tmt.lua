@@ -17,7 +17,7 @@ local rDamageOutput = nil;
 
 rBeforeDamageTakenEvent = {
 	sName = "before_damage_taken_event",
-	aParameters = {"rSource", "rTarget", "nDamage", "nWounds", "nHitpoints"}
+	aParameters = {"rSource", "rTarget", "nDamage", "nWounds", "nHitpoints", "nTemporaryHitpoints"}
 };
 
 -- TODO damage value comparison
@@ -28,6 +28,7 @@ rBeforeDamageTakenEvent = {
 --			which would need secondary configurable for type of comparison
 
 rTargetHasCurrentHitPointsCondition = nil;
+rTargetHasCurrentTemporaryHitPointsCondition = nil;
 rDamageValueCondition = nil;
 
 rEnsureRemainingHitpointsAction = nil;
@@ -52,6 +53,19 @@ function initializeConditions()
 	rTargetHasCurrentHitPointsCondition = {
 		sName = "target_has_current_hit_points_condition",
 		fCondition = targetHasCurrentHitpoints,
+		aRequiredParameters = {"rTarget"},
+		aConfigurableParameters = {
+			TriggerData.rComparisonParameter,
+			{
+				sName = "nCompareAgainst",
+				sDisplay = "value_parameter",
+				sType = "number",
+			},
+		},
+	};
+	rTargetHasCurrentTemporaryHitPointsCondition = {
+		sName = "target_has_current_temporary_hit_points_condition",
+		fCondition = targetHasCurrentTemporaryHitpoints,
 		aRequiredParameters = {"rTarget"},
 		aConfigurableParameters = {
 			TriggerData.rComparisonParameter,
@@ -90,6 +104,7 @@ function initializeConditions()
 	};
 
 	TriggerManager.defineCondition(rTargetHasCurrentHitPointsCondition);
+	TriggerManager.defineCondition(rTargetHasCurrentTemporaryHitPointsCondition);
 	TriggerManager.defineCondition(rDamageValueCondition);
 end
 
@@ -176,6 +191,15 @@ function targetHasCurrentHitpoints(rTriggerData, rEventData)
 	return TriggerData.resolveComparison(nCurrent, rTriggerData.nCompareAgainst, rTriggerData.sComparison);
 end
 
+function targetHasCurrentTemporaryHitpoints(rTriggerData, rEventData)
+	if rEventData.rTarget == nil then
+		return false;
+	end
+
+	local nCurrent = getCurrentTemporaryHitPoints(rEventData.rTarget);
+	return TriggerData.resolveComparison(nCurrent, rTriggerData.nCompareAgainst, rTriggerData.sComparison);
+end
+
 function damageIsValue(rTriggerData, rEventData)
 	if rTriggerData.sCompareTo == "target_hitpoints_parameter" then
 		local nCurrent = getCurrentHitPoints(rEventData.rTarget);
@@ -194,6 +218,21 @@ function getCurrentHitPoints(rActor)
 	local nTotal = getTotalHitPoints(rActor, sType, nodeActor);
 	local nWounds = getWounds(rActor, sType, nodeActor);
 	return nTotal - nWounds;
+end
+
+function getCurrentTemporaryHitPoints(rActor)
+	local sType, nodeActor = ActorManager.getTypeAndNode(rActor);
+	if not nodeActor then
+		return nil;
+	end
+
+	local nTemporary;
+	if sType == "pc" then
+		nTemporary = DB.getValue(nodeActor, "hp.temporary", 0);
+	else
+		nTemporary = DB.getValue(nodeActor, "hptemp", 0);
+	end
+	return nTemporary;
 end
 
 function getTotalHitPoints(rActor, sType, nodeActor)
