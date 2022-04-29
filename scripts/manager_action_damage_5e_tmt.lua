@@ -28,7 +28,7 @@ rBeforeDamageTakenEvent = {
 --			which would need secondary configurable for type of comparison
 
 rTargetHasCurrentHitPointsCondition = nil;
-rTargetHasTemporaryHitPointsCondition = nil;
+rCombatantHasTemporaryHitPointsCondition = nil;
 rDamageValueCondition = nil;
 
 rEnsureRemainingHitpointsAction = nil;
@@ -64,7 +64,7 @@ function initializeConditions()
 		},
 	};
 
-	rTargetHasTemporaryHitPointsCondition  = {
+	rCombatantHasTemporaryHitPointsCondition  = {
 		sName = "combatant_has_temporary_hit_points_condition",
 		fCondition = combatantHasTemporaryHitpoints,
 		aConfigurableParameters = {
@@ -120,7 +120,7 @@ function initializeConditions()
 	};
 
 	TriggerManager.defineCondition(rTargetHasCurrentHitPointsCondition);
-	TriggerManager.defineCondition(rTargetHasTemporaryHitPointsCondition);
+	TriggerManager.defineCondition(rCombatantHasTemporaryHitPointsCondition);
 	TriggerManager.defineCondition(rDamageValueCondition);
 end
 
