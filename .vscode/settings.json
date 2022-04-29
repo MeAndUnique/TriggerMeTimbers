@@ -1,0 +1,11 @@
+{
+  "Lua.diagnostics.globals": [
+    "TriggerData",
+    "ActorManager",
+    "DB",
+    "TriggerManager",
+    "ActionDamage",
+    "StringManager"
+  ],
+  "Lua.diagnostics.disable": ["lowercase-global", "deprecated"]
+}

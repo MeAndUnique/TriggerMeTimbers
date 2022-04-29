@@ -28,7 +28,7 @@ rBeforeDamageTakenEvent = {
 --			which would need secondary configurable for type of comparison
 
 rTargetHasCurrentHitPointsCondition = nil;
-rTargetHasCurrentTemporaryHitPointsCondition = nil;
+rTargetHasTemporaryHitPointsCondition = nil;
 rDamageValueCondition = nil;
 
 rEnsureRemainingHitpointsAction = nil;
@@ -63,11 +63,26 @@ function initializeConditions()
 			},
 		},
 	};
-	rTargetHasCurrentTemporaryHitPointsCondition = {
-		sName = "target_has_current_temporary_hit_points_condition",
-		fCondition = targetHasCurrentTemporaryHitpoints,
-		aRequiredParameters = {"rTarget"},
+
+	rTargetHasTemporaryHitPointsCondition  = {
+		sName = "combatant_has_temporary_hit_points_condition",
+		fCondition = combatantHasTemporaryHitpoints,
 		aConfigurableParameters = {
+			{
+				sName = "sCombatant",
+				sDisplay = "combatant_parameter",
+				sType = "combo",
+				aDefinedValues = {
+					{
+						sValue = "source_subject",
+						aRequiredParameters = {"rSource"}
+					},
+					{
+						sValue = "target_subject",
+						aRequiredParameters = {"rTarget"}
+					},
+				}
+			},
 			TriggerData.rComparisonParameter,
 			{
 				sName = "nCompareAgainst",
@@ -76,6 +91,7 @@ function initializeConditions()
 			},
 		},
 	};
+
 	rDamageValueCondition = {
 		sName = "damage_value_condition",
 		fCondition = damageIsValue,
@@ -104,7 +120,7 @@ function initializeConditions()
 	};
 
 	TriggerManager.defineCondition(rTargetHasCurrentHitPointsCondition);
-	TriggerManager.defineCondition(rTargetHasCurrentTemporaryHitPointsCondition);
+	TriggerManager.defineCondition(rTargetHasTemporaryHitPointsCondition);
 	TriggerManager.defineCondition(rDamageValueCondition);
 end
 
@@ -191,13 +207,15 @@ function targetHasCurrentHitpoints(rTriggerData, rEventData)
 	return TriggerData.resolveComparison(nCurrent, rTriggerData.nCompareAgainst, rTriggerData.sComparison);
 end
 
-function targetHasCurrentTemporaryHitpoints(rTriggerData, rEventData)
-	if rEventData.rTarget == nil then
-		return false;
+function combatantHasTemporaryHitpoints(rTriggerData, rEventData)
+	local nTemporary;
+	if rTriggerData.sCombatant == "source_subject" then
+		nTemporary = getTemporaryHitPoints(rEventData.rSource);
+	elseif rTriggerData.sCombatant == "target_subject" then
+		nTemporary = getTemporaryHitPoints(rEventData.rTarget);
 	end
 
-	local nCurrent = getCurrentTemporaryHitPoints(rEventData.rTarget);
-	return TriggerData.resolveComparison(nCurrent, rTriggerData.nCompareAgainst, rTriggerData.sComparison);
+	return TriggerData.resolveComparison(nTemporary, rTriggerData.nCompareAgainst, rTriggerData.sComparison);
 end
 
 function damageIsValue(rTriggerData, rEventData)
@@ -220,7 +238,7 @@ function getCurrentHitPoints(rActor)
 	return nTotal - nWounds;
 end
 
-function getCurrentTemporaryHitPoints(rActor)
+function getTemporaryHitPoints(rActor)
 	local sType, nodeActor = ActorManager.getTypeAndNode(rActor);
 	if not nodeActor then
 		return nil;

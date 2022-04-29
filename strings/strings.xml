@@ -30,7 +30,7 @@
 	<string name="roll_is_type_condition">Roll Is Type</string>
 	<string name="roll_is_value_condition">Roll Is Value</string>
 	<string name="target_has_current_hit_points_condition">Target Has Current Hit Points</string>
-	<string name="target_has_current_temporary_hit_points_condition">Target Has Current Temporary Hit Points</string>
+	<string name="combatant_has_temporary_hit_points_condition">Combatant Has Temporary Hit Points</string>
 
 	<string name="ensure_target_has_remaining_hit_points_action">Ensure Target Has Remaining Hit Points</string>
 	<string name="remove_effect_from_combatant_action">Remove Effect From Combatant</string>
