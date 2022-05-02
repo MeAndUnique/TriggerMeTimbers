@@ -21,6 +21,7 @@
 
 	<string name="before_damage_taken_event">Before Damage Taken</string>
 	<string name="dice_rolled_event">Dice Rolled</string>
+	<string name="power_used_event">Power Used</string>
 
 	<string name="combatant_has_effect_condition">Combatant Has Effect</string>
 	<string name="creature_has_trait_condition">Creature Has Trait</string>
@@ -68,6 +69,22 @@
 	<string name="lowest_dice">Lowest</string>
 	<string name="matching_dice">Matching</string>
 	<string name="sum_dice">Sum</string>
+	
+	<string name="power_used_contains_data">Power Contains Data</string>
+	<string name="power_used_property_parameter">Property</string>
+	<string name="power_used_contains_parameter">Contains</string>
+	<string name="power_used_property_name">Name</string>
+	<string name="power_used_property_keywords">Keywords</string>
+	<string name="power_used_property_recharge">Recharge</string>
+	<string name="power_used_property_action">Action</string>
+	<string name="power_used_property_range">Range</string>
+
+	<string name="apply_heal_to_combatant_action">Apply Healing to Combatant</string>
+	<string name="apply_heal_label_parameter">Label</string>
+	<string name="apply_heal_type_parameter">Healing Type</string>
+	<string name="apply_heal_value_parameter">Value</string>
+	<string name="apply_heal_type_hitpoints">HP</string>
+	<string name="apply_heal_type_temphitpoints">Temp HP</string>
 
 	<string name="trait_type_all">All</string>
 	<string name="trait_type_feat">Feat</string>

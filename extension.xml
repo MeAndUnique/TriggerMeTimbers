@@ -47,6 +47,12 @@ Wood Board Vectors by Vecteezy
 		<script name="TriggerData" file="scripts/data_trigger.lua" />
 		<script name="TriggerManager" file="scripts/manager_trigger.lua" />
 
+		<!-- 4E -->
+		<script name="CharPowerTMT_4E" file="scripts/manager_char_4e_tmt.lua" ruleset="4E" />
+		<script name="ActionDamageTMT_4E" file="scripts/manager_action_damage_4e_tmt.lua" ruleset="4E" />
+		<includefile source="campaign/4e/char_power.xml" ruleset="4E" />
+
+		<!-- TMT -->
 		<includefile source="triggers/triggers.xml" />
 		<includefile source="triggers/template_triggers.xml" />
 

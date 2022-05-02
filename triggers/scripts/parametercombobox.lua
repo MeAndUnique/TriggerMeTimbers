@@ -23,7 +23,7 @@ function configure(rParameterInfo, aEventParameters)
 			end
 		end
 	end
-	Debug.chat("configure", rParameterInfo, aEventParameters, node.getValue());
+	-- Debug.chat("configure", rParameterInfo, aEventParameters, node.getValue());
 	setComboValue(node.getValue());
 end
 
