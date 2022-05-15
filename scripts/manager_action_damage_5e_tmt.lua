@@ -14,10 +14,11 @@ local stringFormatOriginal;
 local rActiveSource = nil;
 local rActiveTarget = nil;
 local rDamageOutput = nil;
+local bPrepareForBeforeDamageEvent = false;
 
 rBeforeDamageTakenEvent = {
 	sName = "before_damage_taken_event",
-	aParameters = {"rSource", "rTarget", "nDamage", "nWounds", "nHitpoints"}
+	aParameters = {"rSource", "rTarget", "nDamage", "nWounds", "nHitpoints", "nTemporaryHitpoints"}
 };
 
 -- TODO damage value comparison
@@ -28,9 +29,11 @@ rBeforeDamageTakenEvent = {
 --			which would need secondary configurable for type of comparison
 
 rTargetHasCurrentHitPointsCondition = nil;
+rCombatantHasTemporaryHitPointsCondition = nil;
 rDamageValueCondition = nil;
 
 rEnsureRemainingHitpointsAction = nil;
+rModifyDamageAction = nil;
 
 function onInit()
 	getDamageAdjustOriginal = ActionDamage.getDamageAdjust;
@@ -62,6 +65,35 @@ function initializeConditions()
 			},
 		},
 	};
+
+	rCombatantHasTemporaryHitPointsCondition  = {
+		sName = "combatant_has_temporary_hit_points_condition",
+		fCondition = combatantHasTemporaryHitpoints,
+		aConfigurableParameters = {
+			{
+				sName = "sCombatant",
+				sDisplay = "combatant_parameter",
+				sType = "combo",
+				aDefinedValues = {
+					{
+						sValue = "source_subject",
+						aRequiredParameters = {"rSource"}
+					},
+					{
+						sValue = "target_subject",
+						aRequiredParameters = {"rTarget"}
+					},
+				}
+			},
+			TriggerData.rComparisonParameter,
+			{
+				sName = "nCompareAgainst",
+				sDisplay = "value_parameter",
+				sType = "number",
+			},
+		},
+	};
+
 	rDamageValueCondition = {
 		sName = "damage_value_condition",
 		fCondition = damageIsValue,
@@ -90,6 +122,7 @@ function initializeConditions()
 	};
 
 	TriggerManager.defineCondition(rTargetHasCurrentHitPointsCondition);
+	TriggerManager.defineCondition(rCombatantHasTemporaryHitPointsCondition);
 	TriggerManager.defineCondition(rDamageValueCondition);
 end
 
@@ -103,6 +136,54 @@ function intializeActions()
 				sName = "nMinimum",
 				sDisplay = "minimum_parameter",
 				sType = "number",
+			},
+			{
+				sName = "sMessage",
+				sDisplay = "chat_message_parameter",
+				sType = "string",
+			},
+		},
+	};
+
+	-- TODO resolve behavior for reduced damage interacting with other systems, such as concentration, or life steal
+	rModifyDamageAction = {
+		sName="modify_damage_action",
+		fAction = modifyDamage,
+		aRequiredParameters = {"nDamage"},
+		aConfigurableParameters = {
+			{
+				sName = "sModification",
+				sDisplay = "modification_parameter",
+				sType = "combo",
+				aDefinedValues = {
+					"modification_add",
+					"modification_at_least",
+					"modification_at_most",
+					"modification_ratio",
+					"modification_set_to",
+				},
+			},
+			{
+				sName = "sCompareTo",
+				sDisplay = "compare_against_parameter",
+				sType = "combo",
+				aDefinedValues = {
+					"number_parameter",
+					"target_hitpoints_parameter",
+				},
+				fCheckVisibility = checkModifyDamageCompareVisibility,
+			},
+			{
+				sName = "nValue",
+				sDisplay = "value_parameter",
+				sType = "number",
+				fCheckVisibility = checkModifyDamageValueVisibility,
+			},
+			{
+				sName = "nOffset",
+				sDisplay = "offset_parameter",
+				sType = "number",
+				fCheckVisibility = checkModifyDamageOffsetVisibility,
 			},
 			{
 				sName = "sMessage",
@@ -139,11 +220,14 @@ end
 function getDamageAdjust(rSource, rTarget, nDamage, rDamageOutput)
 	local results = {getDamageAdjustOriginal(rSource, rTarget, nDamage, rDamageOutput)};
 
-	mathMaxOriginal = math.max;
-	math.max = mathMax;
-	stringFormatOriginal = string.format;
-	string.format = stringFormat;
+	if bPrepareForBeforeDamageEvent then
+		mathMaxOriginal = math.max;
+		math.max = mathMax;
+		stringFormatOriginal = string.format;
+		string.format = stringFormat;
+	end
 
+	bPrepareForBeforeDamageEvent = false;
 	return unpack(results);
 end
 
@@ -156,6 +240,7 @@ function applyDamage(rSource, rTarget, bSecret, sDamage, nTotal)
 	rActiveSource = rSource;
 	rActiveTarget = rTarget;
 	initialHitPoints = getCurrentHitPoints(rTarget);
+	bPrepareForBeforeDamageEvent = true;
 	applyDamageOriginal(rSource, rTarget, bSecret, sDamage, nTotal);
 end
 
@@ -176,6 +261,17 @@ function targetHasCurrentHitpoints(rTriggerData, rEventData)
 	return TriggerData.resolveComparison(nCurrent, rTriggerData.nCompareAgainst, rTriggerData.sComparison);
 end
 
+function combatantHasTemporaryHitpoints(rTriggerData, rEventData)
+	local nTemporary;
+	if rTriggerData.sCombatant == "source_subject" then
+		nTemporary = getTemporaryHitPoints(rEventData.rSource);
+	elseif rTriggerData.sCombatant == "target_subject" then
+		nTemporary = getTemporaryHitPoints(rEventData.rTarget);
+	end
+
+	return TriggerData.resolveComparison(nTemporary, rTriggerData.nCompareAgainst, rTriggerData.sComparison);
+end
+
 function damageIsValue(rTriggerData, rEventData)
 	if rTriggerData.sCompareTo == "target_hitpoints_parameter" then
 		local nCurrent = getCurrentHitPoints(rEventData.rTarget);
@@ -188,7 +284,7 @@ end
 function getCurrentHitPoints(rActor)
 	local sType, nodeActor = ActorManager.getTypeAndNode(rActor);
 	if not nodeActor then
-		return nil;
+		return 0;
 	end
 
 	local nTotal = getTotalHitPoints(rActor, sType, nodeActor);
@@ -196,15 +292,29 @@ function getCurrentHitPoints(rActor)
 	return nTotal - nWounds;
 end
 
+function getTemporaryHitPoints(rActor)
+	local sType, nodeActor = ActorManager.getTypeAndNode(rActor);
+	if not nodeActor then
+		return 0;
+	end
+
+	local nTemporary;
+	if sType == "pc" then
+		nTemporary = DB.getValue(nodeActor, "hp.temporary", 0);
+	else
+		nTemporary = DB.getValue(nodeActor, "hptemp", 0);
+	end
+	return nTemporary;
+end
+
 function getTotalHitPoints(rActor, sType, nodeActor)
 	if not nodeActor then
 		sType, nodeActor = ActorManager.getTypeAndNode(rActor);
 	end
 	if not nodeActor then
-		return nil;
+		return 0;
 	end
 
-	local nWounds = getWounds(rActor);
 	local nTotal;
 	if sType == "pc" then
 		nTotal = DB.getValue(nodeActor, "hp.total", 0);
@@ -219,7 +329,7 @@ function getWounds(rActor, sType, nodeActor)
 		sType, nodeActor = ActorManager.getTypeAndNode(rActor);
 	end
 	if not nodeActor then
-		return nil;
+		return 0;
 	end
 
 	local nTotal, nWounds;
@@ -243,6 +353,56 @@ function ensureRemainingHitpoints(rTriggerData, rEventData)
 	end
 end
 
+function modifyDamage(rTriggerData, rEventData)
+	local nInitialDamage = rEventData.nDamage;
+	if rTriggerData.sModification == "modification_add" then
+		rEventData.nDamage = rEventData.nDamage + rTriggerData.nValue;
+	elseif rTriggerData.sModification == "modification_at_least" then
+		if rTriggerData.sCompareTo == "number_parameter" then
+			rEventData.nDamage = math.min(rEventData.nDamage, -rTriggerData.nValue);
+		elseif rEventData.rTarget and (rTriggerData.sCompareTo == "target_hitpoints_parameter") then
+			local nCurrent = (rEventData.nWounds or 0) - (rEventData.nHitpoints or 0);
+			rEventData.nDamage = math.min(rEventData.nDamage, nCurrent + rTriggerData.nOffset);
+		end
+	elseif rTriggerData.sModification == "modification_at_most" then
+		if rTriggerData.sCompareTo == "number_parameter" then
+			rEventData.nDamage = math.max(rEventData.nDamage, -rTriggerData.nValue);
+		elseif rEventData.rTarget and (rTriggerData.sCompareTo == "target_hitpoints_parameter") then
+			local nCurrent = (rEventData.nWounds or 0) - (rEventData.nHitpoints or 0);
+			rEventData.nDamage = math.max(rEventData.nDamage, nCurrent + rTriggerData.nOffset);
+		end
+	elseif rTriggerData.sModification == "modification_ratio" then
+		rEventData.nDamage = math.floor(rEventData.nDamage * rTriggerData.nValue);
+	elseif rTriggerData.sModification == "modification_set_to" then
+		if rTriggerData.sCompareTo == "number_parameter" then
+			rEventData.nDamage = -rTriggerData.nValue;
+		elseif rEventData.rTarget and (rTriggerData.sCompareTo == "target_hitpoints_parameter") then
+			local nCurrent = (rEventData.nWounds or 0) - (rEventData.nHitpoints or 0);
+			rEventData.nDamage = nCurrent + rTriggerData.nOffset;
+		end
+	end
+
+	if nInitialDamage ~= rEventData.nDamage then
+		table.insert(rDamageOutput.tNotifications, rTriggerData.sMessage);
+	end
+end
+
 function checkDamageValueCompareAgainstVisibility(rConditionData)
 	return rConditionData.sCompareTo == "number_parameter";
+end
+
+function checkModifyDamageCompareVisibility(rConditionData)
+	return (rConditionData.sModification == "modification_at_least")
+		or (rConditionData.sModification == "modification_at_most")
+		or (rConditionData.sModification == "modification_set_to");
+end
+
+function checkModifyDamageOffsetVisibility(rConditionData)
+	return rConditionData.sCompareTo == "target_hitpoints_parameter";
+end
+
+function checkModifyDamageValueVisibility(rConditionData)
+	return (rConditionData.sModification == "modification_add")
+		or (rConditionData.sModification == "modification_ratio")
+		or (rConditionData.sCompareTo == "number_parameter");
 end
