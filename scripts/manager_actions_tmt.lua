@@ -199,7 +199,7 @@ function changeDice(rTriggerData, rEventData, sDisplay, fGetResult)
 	local nIndicesToReplace = {};
 	local nExtremity;
 	if rTriggerData.sSelection == "lowest_dice" then
-		nExtremity = 10000;
+		nExtremity = math.huge;
 		fSelect = function(nCurrent, nIndex)
 			if nCurrent < nExtremity then
 				nExtremity = nCurrent;
@@ -207,7 +207,7 @@ function changeDice(rTriggerData, rEventData, sDisplay, fGetResult)
 			end
 		end
 	elseif rTriggerData.sSelection == "highest_dice" then
-		nExtremity = -10000;
+		nExtremity = -math.huge;
 		fSelect = function(nCurrent, nIndex)
 			if nCurrent > nExtremity then
 				nExtremity = nCurrent;
