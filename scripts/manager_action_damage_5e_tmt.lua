@@ -145,6 +145,7 @@ function intializeActions()
 		},
 	};
 
+	-- TODO resolve behavior for reduced damage interacting with other systems, such as concentration, or life steal
 	rModifyDamageAction = {
 		sName="modify_damage_action",
 		fAction = modifyDamage,
@@ -193,7 +194,6 @@ function intializeActions()
 	};
 
 	TriggerManager.defineAction(rEnsureRemainingHitpointsAction);
-	TriggerManager.defineAction(rModifyDamageAction);
 end
 
 function mathMax(adjustedWounds, zero)
@@ -218,7 +218,6 @@ end
 
 
 function getDamageAdjust(rSource, rTarget, nDamage, rDamageOutput)
-	-- TODO add flag for ensuring this only occurs when called directly from the original applyDamage
 	local results = {getDamageAdjustOriginal(rSource, rTarget, nDamage, rDamageOutput)};
 
 	if bPrepareForBeforeDamageEvent then
@@ -355,7 +354,6 @@ function ensureRemainingHitpoints(rTriggerData, rEventData)
 end
 
 function modifyDamage(rTriggerData, rEventData)
-	Debug.chat("modifyDamage", rTriggerData, rEventData)
 	local nInitialDamage = rEventData.nDamage;
 	if rTriggerData.sModification == "modification_add" then
 		rEventData.nDamage = rEventData.nDamage + rTriggerData.nValue;
