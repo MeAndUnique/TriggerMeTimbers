@@ -21,6 +21,8 @@
 
 	<string name="before_damage_taken_event">Before Damage Taken</string>
 	<string name="dice_rolled_event">Dice Rolled</string>
+	<string name="power_used_event">Power Used</string>
+	<string name="after_attack_event">After Attack Roll</string>
 
 	<string name="combatant_has_effect_condition">Combatant Has Effect</string>
 	<string name="creature_has_trait_condition">Creature Has Trait</string>
@@ -32,12 +34,15 @@
 	<string name="target_has_current_hit_points_condition">Target Has Current Hit Points</string>
 	<string name="combatant_has_temporary_hit_points_condition">Combatant Has Temporary Hit Points</string>
 
+	<!-- Actions -->
 	<string name="ensure_target_has_remaining_hit_points_action">Ensure Target Has Remaining Hit Points</string>
 	<string name="modify_damage_action">Modify Damage</string>
 	<string name="remove_effect_from_combatant_action">Remove Effect From Combatant</string>
 	<string name="replace_dice_action">Replace Dice</string>
 	<string name="reroll_dice_action">Reroll Dice</string>
+	<string name="send_chat_message_action">Send Chat Message</string>
 
+	<!-- Parameters -->
 	<string name="chat_message_parameter">Chat Message</string>
 	<string name="combatant_parameter">Combatant</string>
 	<string name="comparison_parameter">Comparison</string>
@@ -71,6 +76,38 @@
 	<string name="lowest_dice">Lowest</string>
 	<string name="matching_dice">Matching</string>
 	<string name="sum_dice">Sum</string>
+	
+	<!-- Power contains data condition -->
+	<string name="power_used_contains_data">Power Contains Data</string>
+	<string name="power_used_property_parameter">Property</string>
+	<string name="power_used_contains_parameter">Contains</string>
+	<string name="power_used_property_name">Name</string>
+	<string name="power_used_property_keywords">Keywords</string>
+	<string name="power_used_property_recharge">Recharge</string>
+	<string name="power_used_property_action">Action</string>
+	<string name="power_used_property_range">Range</string>
+	<string name="power_used_property_level">Level</string>
+	<string name="power_used_property_school">School</string>
+	<string name="power_used_property_castingtime">Casting Time</string>
+	<string name="power_used_property_components">Components</string>
+	<string name="power_used_property_duration">Duration</string>
+	<string name="power_used_property_group">Group</string>
+
+	<!-- Attack result condition -->
+	<string name="attack_result_condition">Attack Roll Is Result</string>
+	<string name="attack_result_property_parameter">Result</string>
+	<string name="attack_result_property_hit">Hit</string>
+	<string name="attack_result_property_miss">Miss</string>
+	<string name="attack_result_property_critical">Critical Hit</string>
+	<string name="attack_result_property_fumble">Automatic Miss</string>
+
+	<!-- Apply healing action -->
+	<string name="apply_heal_to_combatant_action">Apply Healing to Combatant</string>
+	<string name="apply_heal_label_parameter">Label</string>
+	<string name="apply_heal_type_parameter">Healing Type</string>
+	<string name="apply_heal_value_parameter">Value</string>
+	<string name="apply_heal_type_hitpoints">HP</string>
+	<string name="apply_heal_type_temphitpoints">Temp HP</string>
 
 	<string name="modification_add">Add</string>
 	<string name="modification_at_least">At Least</string>

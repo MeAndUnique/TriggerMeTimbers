@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+	Please see the license.html file included with this distribution for 
+	attribution and copyright information.
+-->
+
+<root>
+	<windowclass name="power_item" merge="join" ruleset="5E">
+		<script file="campaign/5e/scripts/record_power.lua" />
+	</windowclass>
+</root>
