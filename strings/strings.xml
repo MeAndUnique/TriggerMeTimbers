@@ -36,6 +36,7 @@
 
 	<!-- Actions -->
 	<string name="ensure_target_has_remaining_hit_points_action">Ensure Target Has Remaining Hit Points</string>
+	<string name="modify_damage_action">Modify Damage</string>
 	<string name="remove_effect_from_combatant_action">Remove Effect From Combatant</string>
 	<string name="replace_dice_action">Replace Dice</string>
 	<string name="reroll_dice_action">Reroll Dice</string>
@@ -53,7 +54,9 @@
 	<string name="include_advantage_parameter">Include Advantage</string>
 	<string name="include_modifiers_parameter">Include Modifiers</string>
 	<string name="minimum_parameter">Minimum</string>
+	<string name="modification_parameter">Modification</string>
 	<string name="number_parameter">Number</string>
+	<string name="offset_parameter">Offset</string>
 	<string name="roll_type_parameter">Type</string>
 	<string name="target_hitpoints_parameter">Target Hitpoints</string>
 	<string name="trait_name_parameter">Trait Name</string>
@@ -105,6 +108,12 @@
 	<string name="apply_heal_value_parameter">Value</string>
 	<string name="apply_heal_type_hitpoints">HP</string>
 	<string name="apply_heal_type_temphitpoints">Temp HP</string>
+
+	<string name="modification_add">Add</string>
+	<string name="modification_at_least">At Least</string>
+	<string name="modification_at_most">At Most</string>
+	<string name="modification_ratio">Ratio</string>
+	<string name="modification_set_to">Set To</string>
 
 	<string name="trait_type_all">All</string>
 	<string name="trait_type_feat">Feat</string>
