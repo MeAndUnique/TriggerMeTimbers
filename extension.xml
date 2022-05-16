@@ -38,18 +38,25 @@ Wood Board Vectors by Vecteezy
 
 	<base>
 		<script name="ActionsManagerTMT" file="scripts/manager_actions_tmt.lua" />
-		<script name="ActionDamageTMT_5E" file="scripts/manager_action_damage_5e_tmt.lua" ruleset="5E" />
+		
 		<script name="CampaignDataManagerTMT" file="scripts/manager_campaigndata_tmt.lua" />
-		<script name="CharDamageTMT_5E" file="scripts/manager_char_5e_tmt.lua" ruleset="5E" />
 		<script name="DesktopManagerTMT" file="scripts/manager_desktop_tmt.lua" />
 		<script name="EffectManagerTMT" file="scripts/manager_effect_tmt.lua" />
+		<script name="ChatManagerTMT" file="scripts/manager_chat_tmt.lua" />
 		<script name="LibraryDataTMT" file="scripts/data_library_tmt.lua" />
 		<script name="TriggerData" file="scripts/data_trigger.lua" />
 		<script name="TriggerManager" file="scripts/manager_trigger.lua" />
 
+		<!-- 5E -->
+		<script name="CharDamageTMT_5E" file="scripts/manager_char_5e_tmt.lua" ruleset="5E" />
+		<script name="ActionDamageTMT_5E" file="scripts/manager_action_damage_5e_tmt.lua" ruleset="5E" />
+		<script name="ActionAttackTMT_5E" file="scripts/manager_action_attack_5e_tmt.lua" ruleset="5E" />
+		<includefile source="campaign/5e/record_power.xml" ruleset="5E" />
+
 		<!-- 4E -->
 		<script name="CharPowerTMT_4E" file="scripts/manager_char_4e_tmt.lua" ruleset="4E" />
 		<script name="ActionDamageTMT_4E" file="scripts/manager_action_damage_4e_tmt.lua" ruleset="4E" />
+		<script name="ActionAttackTMT_4E" file="scripts/manager_action_attack_4e_tmt.lua" ruleset="4E" />
 		<includefile source="campaign/4e/char_power.xml" ruleset="4E" />
 
 		<!-- TMT -->

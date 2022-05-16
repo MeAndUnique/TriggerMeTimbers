@@ -3,7 +3,7 @@
 -- attribution and copyright information.
 --
 
-rPowerUsedCondition = nil;
+rPowerContainsDataCondition = nil;
 rPowerUsedEvent = {
     sName = "power_used_event",
     aParameters = { 
@@ -18,7 +18,7 @@ function onInit()
 end
 
 function initializeConditions()
-    rPowerUsedCondition = {
+    rPowerContainsDataCondition = {
         sName = "power_used_contains_data",
         fCondition  = powerContainsDataCondition,
         aRequiredParameters = {
@@ -46,7 +46,7 @@ function initializeConditions()
         }
     }
 
-    TriggerManager.defineCondition(rPowerUsedCondition)
+    TriggerManager.defineCondition(rPowerContainsDataCondition);
 end
 
 function powerContainsDataCondition(rTriggerData, rEventData)
