@@ -20,6 +20,7 @@
 	<string name="trigger_label_parameters">Parameters</string>
 
 	<string name="before_damage_taken_event">Before Damage Taken</string>
+	<string name="before_damage_taken_event_description">An event that occurs after accounting for any reistances, vulnerabilities, etc, and before the target has any adjustments made to their hit points.</string>
 	<string name="dice_rolled_event">Dice Rolled</string>
 	<string name="power_used_event">Power Used</string>
 	<string name="after_attack_event">After Attack Roll</string>

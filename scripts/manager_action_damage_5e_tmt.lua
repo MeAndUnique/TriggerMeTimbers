@@ -17,6 +17,7 @@ local rDamageOutput = nil;
 local bPrepareForBeforeDamageEvent = false;
 
 rBeforeDamageTakenEvent = {
+	sDescription = "before_damage_taken_event_description",
 	sName = "before_damage_taken_event",
 	aParameters = {"rSource", "rTarget", "nDamage", "nWounds", "nHitpoints", "nTemporaryHitpoints"}
 };

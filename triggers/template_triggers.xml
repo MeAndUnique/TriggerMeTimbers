@@ -22,4 +22,10 @@
 			<skipempty />
 		</windowlist>
 	</template>
+
+	<template name="tooltipcomboboxc">
+		<comboboxc>
+			<script file="triggers/scripts/tooltipcombobox.lua" />
+		</comboboxc>
+	</template>
 </root>

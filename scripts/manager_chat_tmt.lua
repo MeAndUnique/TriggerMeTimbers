@@ -17,7 +17,7 @@ function initializeActions()
 			{
 				sName = "sMessage",
 				sDisplay = "chat_message_parameter",
-				sType = "string"   
+				sType = "string"
 			}
 		}
 	}

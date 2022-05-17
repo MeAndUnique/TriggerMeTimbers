@@ -41,8 +41,9 @@ function getEventName()
 end
 
 function initializeEventList()
-	for sEventName,_ in pairs(TriggerManager.getEventDefinitions()) do
-		eventname.add(sEventName, Interface.getString(sEventName));
+	for _,rEvent in pairs(TriggerManager.getEventDefinitions()) do
+		eventname.add(rEvent.sName, Interface.getString(rEvent.sName));
+		eventname.addTooltip(rEvent.sName, Interface.getString(rEvent.sDescription))
 	end
 
 	local sEventName = DB.getValue(getDatabaseNode(), "eventname");
