@@ -53,11 +53,21 @@ function initializeConditions()
 			{
 				sName = "sMatchAgainst",
 				sDisplay = "match_against_parameter",
+				sDescription = "match_against_parameter_description",
 				sType = "combo",
 				aDefinedValues = {
-					"any_dice",
-					"all_dice",
-					"sum_dice",
+					{
+						sValue = "any_dice",
+						sDescription = "any_dice_description",
+					},
+					{
+						sValue = "all_dice",
+						sDescription = "all_dice_match_against_description",
+					},
+					{
+						sValue = "sum_dice",
+						sDescription = "sum_dice_description",
+					},
 				},
 			},
 			TriggerData.rComparisonParameter,
