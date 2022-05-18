@@ -23,6 +23,7 @@ function updateEvents(aEventNames)
 	aEventParameters = TriggerManager.getCommonParametersForEvents(aEventNames);
 	for _,rActionDefinition in pairs(TriggerManager.getActionDefinitionsForCommonEventParameters(aEventParameters)) do
 		actionname.add(rActionDefinition.sName, Interface.getString(rActionDefinition.sName));
+		actionname.addTooltip(rActionDefinition.sName, Interface.getString(rActionDefinition.sDescription));
 	end
 
 	local sActionName = DB.getValue(getDatabaseNode(), "actionname");

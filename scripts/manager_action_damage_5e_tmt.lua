@@ -71,21 +71,7 @@ function initializeConditions()
 		sName = "combatant_has_temporary_hit_points_condition",
 		fCondition = combatantHasTemporaryHitpoints,
 		aConfigurableParameters = {
-			{
-				sName = "sCombatant",
-				sDisplay = "combatant_parameter",
-				sType = "combo",
-				aDefinedValues = {
-					{
-						sValue = "source_subject",
-						aRequiredParameters = {"rSource"}
-					},
-					{
-						sValue = "target_subject",
-						aRequiredParameters = {"rTarget"}
-					},
-				}
-			},
+			TriggerData.rCombatantParameter,
 			TriggerData.rComparisonParameter,
 			{
 				sName = "nCompareAgainst",

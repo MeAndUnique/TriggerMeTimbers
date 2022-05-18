@@ -20,6 +20,7 @@ function configure(rParameterInfo, aEventParameters)
 		else
 			if TriggerManager.hasRequiredParameters(vDefinition.aRequiredParameters or {}, aEventParameters) then
 				addValue(vDefinition.sValue);
+				addTooltip(vDefinition.sValue, Interface.getString(vDefinition.sDescription));
 			end
 		end
 	end

@@ -46,6 +46,7 @@
 	<!-- Parameters -->
 	<string name="chat_message_parameter">Chat Message</string>
 	<string name="combatant_parameter">Combatant</string>
+	<string name="combatant_parameter_description">Indicates which combatant is to be used.</string>
 	<string name="comparison_parameter">Comparison</string>
 	<string name="compare_against_parameter">Compare Against</string>
 	<string name="creature_parameter">Creature</string>
@@ -122,7 +123,9 @@
 	<string name="trait_type_trait">Trait</string>
 
 	<string name="source_subject">Source</string>
+	<string name="source_subject_description">The source of the event. E.g. the attacker.</string>
 	<string name="target_subject">Target</string>
+	<string name="target_subject_description">The target of the event. E.g. the defender.</string>
 
 	<string name="unknown_event_error">ERROR: Unknown event ID: %s</string>
 	<string name="unknown_condition_error">ERROR: Unknown condition ID: %s</string>

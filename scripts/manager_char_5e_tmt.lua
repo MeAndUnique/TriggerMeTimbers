@@ -26,21 +26,7 @@ function initializeConditions()
 		fCondition = creatureHasTraitCondition,
 		aRequiredParameters = {},
 		aConfigurableParameters = {
-			{
-				sName = "sCreature",
-				sDisplay = "creature_parameter",
-				sType = "combo",
-				aDefinedValues = {
-					{
-						sValue = "source_subject",
-						aRequiredParameters = {"rSource"}
-					},
-					{
-						sValue = "target_subject",
-						aRequiredParameters = {"rTarget"}
-					},
-				}
-			},
+			TriggerData.rCombatantParameter, -- TODO either rename the condition or duplicate the parameter and change the name
 			{
 				sName = "sTraitName",
 				sDisplay = "trait_name_parameter",

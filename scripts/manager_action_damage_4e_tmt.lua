@@ -16,21 +16,7 @@ function initializeActions()
 		sName = "apply_heal_to_combatant_action",
 		fAction = applyHpToCombatant,
 		aConfigurableParameters = {
-			{
-				sName = "sCombatant",
-				sDisplay = "combatant_parameter",
-				sType = "combo",
-				aDefinedValues = {
-					{
-						sValue = "source_subject",
-						aRequiredParameters = {"rSource"}
-					},
-					{
-						sValue = "target_subject",
-						aRequiredParameters = {"rTarget"}
-					},
-				}
-			},
+			TriggerData.rCombatantParameter,
 			{
 				sName = "sLabel",
 				sDisplay = "apply_heal_label_parameter",

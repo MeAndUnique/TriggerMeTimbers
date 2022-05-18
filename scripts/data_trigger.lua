@@ -6,6 +6,25 @@
 rIsSourceCondition = nil;
 rIsTargetCondition = nil;
 
+rCombatantParameter = {
+	sName = "sCombatant",
+	sDisplay = "combatant_parameter",
+	sDescription = "combatant_parameter_description",
+	sType = "combo",
+	aDefinedValues = {
+		{
+			sValue = "source_subject",
+			sDescription = "source_subject_description",
+			aRequiredParameters = {"rSource"}
+		},
+		{
+			sValue = "target_subject",
+			sDescription = "target_subject_description",
+			aRequiredParameters = {"rTarget"}
+		},
+	}
+};
+
 rComparisonParameter = {
 	sName = "sComparison",
 	sDisplay = "comparison_parameter",

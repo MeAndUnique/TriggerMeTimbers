@@ -25,6 +25,7 @@ function setEventName(sEventName)
 	aEventParameters = TriggerManager.getParametersForEvent(sEventName)
 	for _,rConditionDefinition in pairs(TriggerManager.getConditionDefinitionsForEventParameters(aEventParameters)) do
 		conditionname.add(rConditionDefinition.sName, Interface.getString(rConditionDefinition.sName));
+		conditionname.addTooltip(rConditionDefinition.sName, Interface.getString(rConditionDefinition.sDescription));
 	end
 
 	local sConditionName = DB.getValue(getDatabaseNode(), "conditionname");

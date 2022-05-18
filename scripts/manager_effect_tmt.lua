@@ -17,21 +17,7 @@ function initializeConditions()
 		sName = "combatant_has_effect_condition",
 		fCondition = combatantHasEffectCondition,
 		aConfigurableParameters = {
-			{
-				sName = "sCombatant",
-				sDisplay = "combatant_parameter",
-				sType = "combo",
-				aDefinedValues = {
-					{
-						sValue = "source_subject",
-						aRequiredParameters = {"rSource"}
-					},
-					{
-						sValue = "target_subject",
-						aRequiredParameters = {"rTarget"}
-					},
-				}
-			},
+			TriggerData.rCombatantParameter,
 			{
 				sName = "sEffectName",
 				sDisplay = "effect_name_parameter",
@@ -48,21 +34,7 @@ function initializeActions()
 		sName = "remove_effect_from_combatant_action",
 		fAction = removeCombatantEffect,
 		aConfigurableParameters = {
-			{
-				sName = "sCombatant",
-				sDisplay = "combatant_parameter",
-				sType = "combo",
-				aDefinedValues = {
-					{
-						sValue = "source_subject",
-						aRequiredParameters = {"rSource"}
-					},
-					{
-						sValue = "target_subject",
-						aRequiredParameters = {"rTarget"}
-					},
-				}
-			},
+			TriggerData.rCombatantParameter,
 			{
 				sName = "sEffectName",
 				sDisplay = "effect_name_parameter",
