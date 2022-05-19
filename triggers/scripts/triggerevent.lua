@@ -1,5 +1,5 @@
--- 
--- Please see the license.html file included with this distribution for 
+--
+-- Please see the license.html file included with this distribution for
 -- attribution and copyright information.
 --
 
@@ -80,7 +80,7 @@ function setEventName(sEventName)
 	windowlist.window.onEventChanged();
 end
 
-function onEventNameSelected(sSelection)
+function onEventNameSelected()
 	bUpdatingName = true;
 	-- combobox defaults to display value, not data value
 	DB.setValue(getDatabaseNode(), "eventname", "string", getEventName());

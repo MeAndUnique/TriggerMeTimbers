@@ -1,9 +1,9 @@
--- 
--- Please see the license.html file included with this distribution for 
+--
+-- Please see the license.html file included with this distribution for
 -- attribution and copyright information.
 --
 
-local rConditionData = {};
+local bUpdatingName = false;
 local aEventParameters;
 
 function onInit()
@@ -36,7 +36,7 @@ function onConditionNameChanged(nodeConditionName)
 	setConditionName(nodeConditionName.getValue(), true);
 end
 
-function onConditionNameSelected(sSelection)
+function onConditionNameSelected()
 	bUpdatingName = true;
 	-- combobox defaults to display value, not data value
 	DB.setValue(getDatabaseNode(), "conditionname", "string", conditionname.getSelectedValue());

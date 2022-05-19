@@ -1,3 +1,8 @@
+--
+-- Please see the license.txt file included with this distribution for
+-- attribution and copyright information.
+--
+
 local fUsePowerOriginal;
 
 function onInit()
@@ -11,7 +16,7 @@ end
 
 function usePower(bShowFull)
 	fUsePowerOriginal(bShowFull);
-	
+
 	local node = getDatabaseNode();
 
 	local charnode = node.getChild("...");
@@ -26,8 +31,8 @@ function usePower(bShowFull)
 	local sGroup = DB.getValue(node, "group", "");
 	local sRange = DB.getValue(node, "range", "");
 
-	local rPower = { 
-		sName = sName, 
+	local rPower = {
+		sName = sName,
 		nLevel = nLevel,
 		sSchool = sSchool,
 		sCastingTime = sCastingTime,
@@ -40,8 +45,8 @@ function usePower(bShowFull)
 		rSource = rActor,
 		rPower = rPower
 	};
-	
+
 	TriggerManager.fireEvent(
-		CharDamageTMT_5E.rPowerUsedEvent.sName, 
+		CharDamageTMT_5E.rPowerUsedEvent.sName,
 		rEventData);
 end

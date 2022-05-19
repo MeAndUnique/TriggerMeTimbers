@@ -1,8 +1,8 @@
--- 
--- Please see the license.html file included with this distribution for 
+--
+-- Please see the license.html file included with this distribution for
 -- attribution and copyright information.
 --
-local rActionData = {};
+local bUpdatingName = false;
 local aEventParameters;
 
 function onInit()
@@ -34,7 +34,7 @@ function onActionNameChanged(nodeActionName)
 	setActionName(nodeActionName.getValue(), true);
 end
 
-function onActionNameSelected(sSelection)
+function onActionNameSelected()
 	bUpdatingName = true;
 	DB.deleteChild(getDatabaseNode(), "parameters");
 	-- combobox defaults to display value, not data value

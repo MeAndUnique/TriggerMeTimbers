@@ -1,5 +1,5 @@
--- 
--- Please see the license.txt file included with this distribution for 
+--
+-- Please see the license.txt file included with this distribution for
 -- attribution and copyright information.
 --
 
@@ -71,6 +71,6 @@ function applyHpToCombatant(rTriggerData, rEventData)
 	end
 
 	table.insert(rAction.clauses, rHealClause);
-	
+
 	ActionHeal.performRoll(nil, rActor, rAction)
 end

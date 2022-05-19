@@ -1,3 +1,8 @@
+--
+-- Please see the license.txt file included with this distribution for
+-- attribution and copyright information.
+--
+
 local fActivatePowerOriginal;
 function onInit()
 	fActivatePowerOriginal = super.activatePower;
@@ -32,8 +37,8 @@ function activatePower()
 		rSource = rActor,
 		rPower = rPower
 	};
-	
+
 	TriggerManager.fireEvent(
-		CharPowerTMT_4E.rPowerUsedEvent.sName, 
+		CharPowerTMT_4E.rPowerUsedEvent.sName,
 		rEventData);
 end

@@ -1,5 +1,5 @@
--- 
--- Please see the license.txt file included with this distribution for 
+--
+-- Please see the license.txt file included with this distribution for
 -- attribution and copyright information.
 --
 
@@ -54,7 +54,7 @@ function initializeConditions()
 		fCondition = isTarget,
 		aRequiredParameters = {"rTarget"}
 	};
-	
+
 	-- TODO flesh out before re-enabling
 	-- TriggerManager.defineCondition(rIsSourceCondition);
 	-- TriggerManager.defineCondition(rIsTargetCondition);

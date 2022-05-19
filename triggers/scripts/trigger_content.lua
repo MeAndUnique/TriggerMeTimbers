@@ -1,5 +1,5 @@
--- 
--- Please see the license.html file included with this distribution for 
+--
+-- Please see the license.html file included with this distribution for
 -- attribution and copyright information.
 --
 
@@ -54,14 +54,14 @@ function onEventChanged()
 		return;
 	end
 
-	aEvents = getEvents();
+	local aEvents = getEvents();
 	for _,winAction in ipairs(actions.getWindows()) do
 		winAction.updateEvents(aEvents);
 	end
 end
 
 function getEvents()
-	aEvents = {};
+	local aEvents = {};
 	for _,winEvent in ipairs(events.getWindows()) do
 		table.insert(aEvents, winEvent.getEventName());
 	end
@@ -69,6 +69,6 @@ function getEvents()
 end
 
 function onActionAdded(winAction)
-	aEvents = getEvents();
+	local aEvents = getEvents();
 	winAction.updateEvents(aEvents);
 end

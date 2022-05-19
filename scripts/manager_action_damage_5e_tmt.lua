@@ -1,5 +1,5 @@
--- 
--- Please see the license.txt file included with this distribution for 
+--
+-- Please see the license.txt file included with this distribution for
 -- attribution and copyright information.
 --
 
@@ -226,7 +226,6 @@ end
 function applyDamage(rSource, rTarget, bSecret, sDamage, nTotal)
 	rActiveSource = rSource;
 	rActiveTarget = rTarget;
-	initialHitPoints = getCurrentHitPoints(rTarget);
 	bPrepareForBeforeDamageEvent = true;
 	applyDamageOriginal(rSource, rTarget, bSecret, sDamage, nTotal);
 end
@@ -319,7 +318,7 @@ function getWounds(rActor, sType, nodeActor)
 		return 0;
 	end
 
-	local nTotal, nWounds;
+	local nWounds;
 	if sType == "pc" then
 		nWounds = DB.getValue(nodeActor, "hp.wounds", 0);
 	else

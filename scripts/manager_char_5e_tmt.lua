@@ -1,5 +1,5 @@
--- 
--- Please see the license.txt file included with this distribution for 
+--
+-- Please see the license.txt file included with this distribution for
 -- attribution and copyright information.
 --
 
@@ -8,7 +8,7 @@ rPowerContainsDataCondition = nil;
 
 rPowerUsedEvent = {
     sName = "power_used_event",
-    aParameters = { 
+    aParameters = {
         "rSource",
         "rPower"
     };

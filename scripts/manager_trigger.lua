@@ -1,5 +1,5 @@
--- 
--- Please see the license.txt file included with this distribution for 
+--
+-- Please see the license.txt file included with this distribution for
 -- attribution and copyright information.
 --
 
@@ -32,7 +32,7 @@ function onActiveTriggerUpdated(nodeParent, bListchanged)
 end
 
 function onActiveTriggerDeleted(nodeToBeDeleted)
-	unregisterTrigger(nodeTrigger);
+	unregisterTrigger(nodeToBeDeleted);
 end
 
 function defineEvent(rEvent)
@@ -88,7 +88,7 @@ function getConditionDefinitions()
 end
 
 function getConditionDefinitionsForEvent(vEvent)
-	return getConditionDefinitionsForCommonEventParameters(getParametersForEvent(vEvent));
+	return getConditionDefinitionsForEventParameters(getParametersForEvent(vEvent));
 end
 
 function getConditionDefinitionsForEventParameters(aEventParameters)
@@ -140,7 +140,7 @@ function hasRequiredParameters(aRequiredParameters, aEventParameters)
 		end
 	end
 	return bHasRequirements;
-end	
+end
 
 function registerTrigger(nodeTrigger)
 	local rTrigger = loadTriggerFromNode(nodeTrigger);
@@ -161,7 +161,7 @@ function unregisterTrigger(nodeTrigger)
 	if not rTrigger then
 		return;
 	end
-	
+
 	for sEventName,_ in pairs(rTrigger.tEventLists) do
 		local tEventTriggers = tRegisteredEventTriggers[sEventName];
 		if tEventTriggers then
@@ -206,7 +206,6 @@ function loadTriggerEventFromNode(nodeEvent)
 end
 
 function loadTriggerConditionFromNode(nodeCondition)
-	-- TODO invertibility
 	local rCondition = {
 		sName = DB.getValue(nodeCondition, "conditionname", "");
 		rData = loadParametersFromNode(nodeCondition),

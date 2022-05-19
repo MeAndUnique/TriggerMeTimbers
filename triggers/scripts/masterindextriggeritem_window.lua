@@ -1,5 +1,5 @@
--- 
--- Please see the license.html file included with this distribution for 
+--
+-- Please see the license.html file included with this distribution for
 -- attribution and copyright information.
 --
 
@@ -20,16 +20,16 @@ function setRecordType(sNewRecordType)
 	if m_sRecordType == sNewRecordType then
 		return;
 	end
-		
+
 	m_sRecordType = sNewRecordType
-	
+
 	local sRecordDisplayClass = LibraryData.getRecordDisplayClass(m_sRecordType, m_vNode);
 	local sPath = "";
 	if m_vNode then
 		sPath = m_vNode.getPath();
 	end
 	link.setValue(sRecordDisplayClass, sPath);
-	
+
 	local sEmptyNameText = LibraryData.getEmptyNameText(m_sRecordType);
 	name.setEmptyText(sEmptyNameText);
 end
