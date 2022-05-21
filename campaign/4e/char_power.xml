@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+	Please see the license.html file included with this distribution for
+	attribution and copyright information.
+-->
+
+<root>
+	<windowclass name="char_power" merge="join" ruleset="4E">
+		<script file="campaign/4e/scripts/char_power.lua" />
+	</windowclass> 
+</root>

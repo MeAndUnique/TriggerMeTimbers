@@ -1,5 +1,5 @@
--- 
--- Please see the license.html file included with this distribution for 
+--
+-- Please see the license.html file included with this distribution for
 -- attribution and copyright information.
 --
 
@@ -19,6 +19,7 @@ function configure(rNewParameterInfo, sNewEventParameters)
 	rParameterInfo = rNewParameterInfo;
 	aEventParameters = sNewEventParameters;
 	label.setValue(Interface.getString(rParameterInfo.sDisplay));
+	label.setTooltipText(Interface.getString(rParameterInfo.sDescription));
 	if value.configure then
 		value.configure(rParameterInfo, aEventParameters);
 	end

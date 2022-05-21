@@ -1,4 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!--
+	Please see the license.html file included with this distribution for
+	attribution and copyright information.
+-->
 
 <root>
 	<windowclass name="masterindexitem_activetrigger">
@@ -127,7 +131,7 @@
 				</anchored>
 			</button_idelete>
 			<!-- TODO changing event likely invalidates conditions, handle or make explicit at creation of event? -->
-			<comboboxc name="eventname">
+			<tooltipcomboboxc name="eventname">
 				<anchored height="20">
 					<left parent="label_event_name" anchor="right" offset="10" />
 					<top />
@@ -135,7 +139,7 @@
 				</anchored>
 				<listmaxsize>12</listmaxsize>
 				<listdirection>down</listdirection>
-			</comboboxc>
+			</tooltipcomboboxc>
 
 			<label name="label_conditions">
 				<anchored to="label_event_name">
@@ -211,7 +215,7 @@
 				</anchored>
 				<static textres="trigger_label_inverted" />
 			</label>
-			<comboboxc name="conditionname">
+			<tooltipcomboboxc name="conditionname">
 				<anchored height="20">
 					<left parent="label_condition_name" anchor="right" offset="10" />
 					<top />
@@ -219,7 +223,7 @@
 				</anchored>
 				<listmaxsize>12</listmaxsize>
 				<listdirection>down</listdirection>
-			</comboboxc>
+			</tooltipcomboboxc>
 			<parameterlist />
 		</sheetdata>
 	</windowclass>
@@ -249,7 +253,7 @@
 					<right offset="-5"/>
 				</anchored>
 			</button_idelete>
-			<comboboxc name="actionname">
+			<tooltipcomboboxc name="actionname">
 				<anchored height="20">
 					<left parent="label_action_name" anchor="right" offset="10" />
 					<top />
@@ -257,7 +261,7 @@
 				</anchored>
 				<listmaxsize>12</listmaxsize>
 				<listdirection>down</listdirection>
-			</comboboxc>
+			</tooltipcomboboxc>
 			<parameterlist />
 
 			<line_column name="divider">
@@ -316,7 +320,7 @@
 					<top anchor="bottom" relation="current" offset="7" />
 				</anchored>
 			</label>
-			<comboboxc name="value">
+			<tooltipcomboboxc name="value">
 				<script file="triggers/scripts/parametercombobox.lua" />
 				<anchored to="contentanchor">
 					<left offset="110" />
@@ -325,7 +329,7 @@
 				</anchored>
 				<listdirection>down</listdirection>
 				<listmaxsize>6</listmaxsize>
-			</comboboxc>
+			</tooltipcomboboxc>
 		</sheetdata>
 	</windowclass>
 

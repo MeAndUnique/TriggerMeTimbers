@@ -1,9 +1,9 @@
--- 
--- Please see the license.html file included with this distribution for 
+--
+-- Please see the license.html file included with this distribution for
 -- attribution and copyright information.
 --
 
-local rConditionData = {};
+local bUpdatingName = false;
 local aEventParameters;
 
 function onInit()
@@ -25,6 +25,7 @@ function setEventName(sEventName)
 	aEventParameters = TriggerManager.getParametersForEvent(sEventName)
 	for _,rConditionDefinition in pairs(TriggerManager.getConditionDefinitionsForEventParameters(aEventParameters)) do
 		conditionname.add(rConditionDefinition.sName, Interface.getString(rConditionDefinition.sName));
+		conditionname.addTooltip(rConditionDefinition.sName, Interface.getString(rConditionDefinition.sDescription));
 	end
 
 	local sConditionName = DB.getValue(getDatabaseNode(), "conditionname");
@@ -35,7 +36,7 @@ function onConditionNameChanged(nodeConditionName)
 	setConditionName(nodeConditionName.getValue(), true);
 end
 
-function onConditionNameSelected(sSelection)
+function onConditionNameSelected()
 	bUpdatingName = true;
 	-- combobox defaults to display value, not data value
 	DB.setValue(getDatabaseNode(), "conditionname", "string", conditionname.getSelectedValue());

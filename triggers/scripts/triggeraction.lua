@@ -1,8 +1,8 @@
--- 
--- Please see the license.html file included with this distribution for 
+--
+-- Please see the license.html file included with this distribution for
 -- attribution and copyright information.
 --
-local rActionData = {};
+local bUpdatingName = false;
 local aEventParameters;
 
 function onInit()
@@ -23,6 +23,7 @@ function updateEvents(aEventNames)
 	aEventParameters = TriggerManager.getCommonParametersForEvents(aEventNames);
 	for _,rActionDefinition in pairs(TriggerManager.getActionDefinitionsForCommonEventParameters(aEventParameters)) do
 		actionname.add(rActionDefinition.sName, Interface.getString(rActionDefinition.sName));
+		actionname.addTooltip(rActionDefinition.sName, Interface.getString(rActionDefinition.sDescription));
 	end
 
 	local sActionName = DB.getValue(getDatabaseNode(), "actionname");
@@ -33,7 +34,7 @@ function onActionNameChanged(nodeActionName)
 	setActionName(nodeActionName.getValue(), true);
 end
 
-function onActionNameSelected(sSelection)
+function onActionNameSelected()
 	bUpdatingName = true;
 	DB.deleteChild(getDatabaseNode(), "parameters");
 	-- combobox defaults to display value, not data value

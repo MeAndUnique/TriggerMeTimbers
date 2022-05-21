@@ -1,10 +1,29 @@
--- 
--- Please see the license.txt file included with this distribution for 
+--
+-- Please see the license.txt file included with this distribution for
 -- attribution and copyright information.
 --
 
 rIsSourceCondition = nil;
 rIsTargetCondition = nil;
+
+rCombatantParameter = {
+	sName = "sCombatant",
+	sDisplay = "combatant_parameter",
+	sDescription = "combatant_parameter_description",
+	sType = "combo",
+	aDefinedValues = {
+		{
+			sValue = "source_subject",
+			sDescription = "source_subject_description",
+			aRequiredParameters = {"rSource"}
+		},
+		{
+			sValue = "target_subject",
+			sDescription = "target_subject_description",
+			aRequiredParameters = {"rTarget"}
+		},
+	}
+};
 
 rComparisonParameter = {
 	sName = "sComparison",
@@ -35,7 +54,7 @@ function initializeConditions()
 		fCondition = isTarget,
 		aRequiredParameters = {"rTarget"}
 	};
-	
+
 	-- TODO flesh out before re-enabling
 	-- TriggerManager.defineCondition(rIsSourceCondition);
 	-- TriggerManager.defineCondition(rIsTargetCondition);

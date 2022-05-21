@@ -1,5 +1,5 @@
--- 
--- Please see the license.txt file included with this distribution for 
+--
+-- Please see the license.txt file included with this distribution for
 -- attribution and copyright information.
 --
 
@@ -17,6 +17,7 @@ local rDamageOutput = nil;
 local bPrepareForBeforeDamageEvent = false;
 
 rBeforeDamageTakenEvent = {
+	sDescription = "before_damage_taken_event_description",
 	sName = "before_damage_taken_event",
 	aParameters = {"rSource", "rTarget", "nDamage", "nWounds", "nHitpoints", "nTemporaryHitpoints"}
 };
@@ -70,21 +71,7 @@ function initializeConditions()
 		sName = "combatant_has_temporary_hit_points_condition",
 		fCondition = combatantHasTemporaryHitpoints,
 		aConfigurableParameters = {
-			{
-				sName = "sCombatant",
-				sDisplay = "combatant_parameter",
-				sType = "combo",
-				aDefinedValues = {
-					{
-						sValue = "source_subject",
-						aRequiredParameters = {"rSource"}
-					},
-					{
-						sValue = "target_subject",
-						aRequiredParameters = {"rTarget"}
-					},
-				}
-			},
+			TriggerData.rCombatantParameter,
 			TriggerData.rComparisonParameter,
 			{
 				sName = "nCompareAgainst",
@@ -239,7 +226,6 @@ end
 function applyDamage(rSource, rTarget, bSecret, sDamage, nTotal)
 	rActiveSource = rSource;
 	rActiveTarget = rTarget;
-	initialHitPoints = getCurrentHitPoints(rTarget);
 	bPrepareForBeforeDamageEvent = true;
 	applyDamageOriginal(rSource, rTarget, bSecret, sDamage, nTotal);
 end
@@ -332,7 +318,7 @@ function getWounds(rActor, sType, nodeActor)
 		return 0;
 	end
 
-	local nTotal, nWounds;
+	local nWounds;
 	if sType == "pc" then
 		nWounds = DB.getValue(nodeActor, "hp.wounds", 0);
 	else

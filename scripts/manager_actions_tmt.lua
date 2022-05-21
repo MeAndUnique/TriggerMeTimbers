@@ -1,5 +1,5 @@
--- 
--- Please see the license.txt file included with this distribution for 
+--
+-- Please see the license.txt file included with this distribution for
 -- attribution and copyright information.
 --
 
@@ -19,7 +19,7 @@ local resolveActionOriginal;
 function onInit()
 	resolveActionOriginal = ActionsManager.resolveAction;
 	ActionsManager.resolveAction = resolveAction;
-	
+
 	TriggerManager.defineEvent(rDiceRolledEvent);
 
 	initializeConditions();
@@ -53,11 +53,21 @@ function initializeConditions()
 			{
 				sName = "sMatchAgainst",
 				sDisplay = "match_against_parameter",
+				sDescription = "match_against_parameter_description",
 				sType = "combo",
 				aDefinedValues = {
-					"any_dice",
-					"all_dice",
-					"sum_dice",
+					{
+						sValue = "any_dice",
+						sDescription = "any_dice_description",
+					},
+					{
+						sValue = "all_dice",
+						sDescription = "all_dice_match_against_description",
+					},
+					{
+						sValue = "sum_dice",
+						sDescription = "sum_dice_description",
+					},
 				},
 			},
 			TriggerData.rComparisonParameter,
@@ -83,7 +93,7 @@ function initializeConditions()
 			fCheckVisibility = checkAdvantageInclusionVisibility,
 		});
 	end
-	
+
 	TriggerManager.defineCondition(rRollIsTypeCondition);
 	TriggerManager.defineCondition(rRollValueCondition);
 end
@@ -179,7 +189,7 @@ function rollIsValue(rTriggerData, rEventData)
 		if not rTriggerData.bIncludeModifiers then
 			nTotal = nTotal - rEventData.rRoll.nMod;
 		end
-	
+
 		bResult = TriggerData.resolveComparison(nTotal, rTriggerData.nCompareAgainst, rTriggerData.sComparison);
 	end
 
@@ -191,7 +201,7 @@ function rerollDice(rTriggerData, rEventData)
 end
 
 function replaceDice(rTriggerData, rEventData)
-	changeDice(rTriggerData, rEventData, "REPLACE", function(sDieType) return rTriggerData.sReplacement; end)
+	changeDice(rTriggerData, rEventData, "REPLACE", function() return rTriggerData.sReplacement; end)
 end
 
 function changeDice(rTriggerData, rEventData, sDisplay, fGetResult)
@@ -231,7 +241,10 @@ function changeDice(rTriggerData, rEventData, sDisplay, fGetResult)
 		local rDie = rEventData.rRoll.aDice[nIndex];
 		rEventData.rRoll.sDesc = rEventData.rRoll.sDesc .. " [" .. sDisplay .. " " .. rDie.result .. "]";
 		rDie.result = fGetResult(rDie.type);
+		rDie.value = rDie.result;
 	end
+
+	rEventData.rRoll.aDice.total = Utility.getDiceTotal(rEventData.rRoll.aDice);
 end
 
 function checkModifierInclusionVisibility(rConditionData)

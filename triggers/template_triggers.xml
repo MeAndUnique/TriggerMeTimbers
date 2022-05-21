@@ -1,4 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!--
+	Please see the license.html file included with this distribution for
+	attribution and copyright information.
+-->
 
 <root>
 	<template name="list_triggercomponents">
@@ -21,5 +25,11 @@
 			<noscroll />
 			<skipempty />
 		</windowlist>
+	</template>
+
+	<template name="tooltipcomboboxc">
+		<comboboxc>
+			<script file="triggers/scripts/tooltipcombobox.lua" />
+		</comboboxc>
 	</template>
 </root>

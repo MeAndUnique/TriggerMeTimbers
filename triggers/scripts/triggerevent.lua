@@ -1,5 +1,5 @@
--- 
--- Please see the license.html file included with this distribution for 
+--
+-- Please see the license.html file included with this distribution for
 -- attribution and copyright information.
 --
 
@@ -41,8 +41,9 @@ function getEventName()
 end
 
 function initializeEventList()
-	for sEventName,_ in pairs(TriggerManager.getEventDefinitions()) do
-		eventname.add(sEventName, Interface.getString(sEventName));
+	for _,rEvent in pairs(TriggerManager.getEventDefinitions()) do
+		eventname.add(rEvent.sName, Interface.getString(rEvent.sName));
+		eventname.addTooltip(rEvent.sName, Interface.getString(rEvent.sDescription))
 	end
 
 	local sEventName = DB.getValue(getDatabaseNode(), "eventname");
@@ -79,7 +80,7 @@ function setEventName(sEventName)
 	windowlist.window.onEventChanged();
 end
 
-function onEventNameSelected(sSelection)
+function onEventNameSelected()
 	bUpdatingName = true;
 	-- combobox defaults to display value, not data value
 	DB.setValue(getDatabaseNode(), "eventname", "string", getEventName());
