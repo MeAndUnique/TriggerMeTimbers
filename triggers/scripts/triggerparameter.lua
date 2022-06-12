@@ -7,7 +7,6 @@ local rParameterInfo;
 local aEventParameters;
 
 function update(bReadOnly)
-	-- TODO consider making a window script for comboboxed parameters
 	if value.setComboBoxReadOnly then
 		value.setComboBoxReadOnly(bReadOnly);
 	else

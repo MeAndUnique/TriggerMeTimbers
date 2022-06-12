@@ -7,11 +7,11 @@ rCreatureHasTraitCondition = nil;
 rPowerContainsDataCondition = nil;
 
 rPowerUsedEvent = {
-    sName = "power_used_event",
-    aParameters = {
-        "rSource",
-        "rPower"
-    };
+	sName = "power_used_event",
+	aParameters = {
+		"rSource",
+		"rPower"
+	};
 };
 
 function onInit()
@@ -49,62 +49,64 @@ function initializeConditions()
 	TriggerManager.defineCondition(rCreatureHasTraitCondition);
 
 	rPowerContainsDataCondition = {
-        sName = "power_used_contains_data",
-        fCondition  = powerContainsDataCondition,
-        aRequiredParameters = {
-            "rSource",
-            "rPower"
-        },
-        aConfigurableParameters = {
-            {
-                sName = "sPowerProperty",
-                sDisplay = "power_used_property_parameter",
-                sType = "combo",
-                aDefinedValues = {
-                    "power_used_property_name",
-                    "power_used_property_level",
-                    "power_used_property_school",
-                    "power_used_property_castingtime",
+		sName = "power_used_contains_data",
+		fCondition  = powerContainsDataCondition,
+		aRequiredParameters = {
+			"rSource",
+			"rPower"
+		},
+		aConfigurableParameters = {
+			{
+				sName = "sPowerProperty",
+				sDisplay = "power_used_property_parameter",
+				sType = "combo",
+				aDefinedValues = {
+					"power_used_property_name",
+					"power_used_property_level",
+					"power_used_property_school",
+					"power_used_property_castingtime",
 					"power_used_property_components",
 					"power_used_property_duration",
 					"power_used_property_group",
-                    "power_used_property_range",
-                }
-            },
-            {
-                sName = "sPowerContains",
-                sDisplay = "power_used_contains_parameter",
-                sType = "string"
-            }
-        }
-    }
+					"power_used_property_range",
+				}
+			},
+			{
+				sName = "sPowerContains",
+				sDisplay = "power_used_contains_parameter",
+				sType = "string"
+			}
+		}
+	}
 
-    TriggerManager.defineCondition(rPowerContainsDataCondition);
+	TriggerManager.defineCondition(rPowerContainsDataCondition);
 end
 
 function creatureHasTraitCondition(rTriggerData, rEventData)
-	if rTriggerData.sCreature == "source_subject" then
-		return hasTrait(rEventData.rSource, rTriggerData.sTraitName);
-	elseif rTriggerData.sCreature == "target_subject" then
-		return hasTrait(rEventData.rTarget, rTriggerData.sTraitName);
+	Debug.chat("creatureHasTraitCondition", rTriggerData, rEventData)
+	if rTriggerData.sCombatant == "source_subject" then
+		return hasTrait(rEventData.rSource, rTriggerData.sType, rTriggerData.sTraitName);
+	elseif rTriggerData.sCombatant == "target_subject" then
+		return hasTrait(rEventData.rTarget, rTriggerData.sType, rTriggerData.sTraitName);
 	end
 
 	return false;
 end
 
-function hasTrait(rActor, sTrait)
-	local sType, nodeActor = ActorManager.getTypeAndNode(rActor);
+function hasTrait(rActor, sTraitType, sTrait)
+	local sNodeType, nodeActor = ActorManager.getTypeAndNode(rActor);
+	Debug.chat("hasTrait", rActor, sTraitType, sTrait, sNodeType, nodeActor)
 	if not nodeActor then
 		return false;
 	end
 
-	if sType == "pc" then
-		if sType == "trait_feat" then
-			return sType == CharManager.hasFeat(nodeActor, sTrait);
-		elseif sType == "trait_feature" then
-			return sType == CharManager.hasFeature(nodeActor, sTrait);
-		elseif sType == "trait_trait" then
-			return sType == CharManager.hasTrait(nodeActor, sTrait);
+	if sNodeType == "pc" then
+		if sTraitType == "trait_type_feat" then
+			return CharManager.hasFeat(nodeActor, sTrait);
+		elseif sTraitType == "trait_type_feature" then
+			return CharManager.hasFeature(nodeActor, sTrait);
+		elseif sTraitType == "trait_type_trait" then
+			return CharManager.hasTrait(nodeActor, sTrait);
 		else
 			return CharManager.hasFeat(nodeActor, sTrait) or
 				CharManager.hasFeature(nodeActor, sTrait) or
@@ -122,32 +124,32 @@ function hasTrait(rActor, sTrait)
 end
 
 function powerContainsDataCondition(rTriggerData, rEventData)
-    -- If contain property is empty, return true
-    if (rTriggerData.sPowerContains or "") == "" then
-        return true;
-    end
+	-- If contain property is empty, return true
+	if (rTriggerData.sPowerContains or "") == "" then
+		return true;
+	end
 
-    local sData = "";
-    if rTriggerData.sPowerProperty == "power_used_property_name" then
-        sData = rEventData.rPower.sName;
-    elseif rTriggerData.sPowerProperty == "power_used_property_level" then
-        sData = tostring(rEventData.rPower.nLevel);
-    elseif rTriggerData.sPowerProperty == "power_used_property_school" then
-        sData = rEventData.rPower.sSchool;
-    elseif rTriggerData.sPowerProperty == "power_used_property_castingtime" then
-        sData = rEventData.rPower.sCastingTime;
+	local sData = "";
+	if rTriggerData.sPowerProperty == "power_used_property_name" then
+		sData = rEventData.rPower.sName;
+	elseif rTriggerData.sPowerProperty == "power_used_property_level" then
+		sData = tostring(rEventData.rPower.nLevel);
+	elseif rTriggerData.sPowerProperty == "power_used_property_school" then
+		sData = rEventData.rPower.sSchool;
+	elseif rTriggerData.sPowerProperty == "power_used_property_castingtime" then
+		sData = rEventData.rPower.sCastingTime;
 	elseif rTriggerData.sPowerProperty == "power_used_property_components" then
 		sData = rEventData.rPower.sComponents;
 	elseif rTriggerData.sPowerProperty == "power_used_property_duration" then
 		sData = rEventData.rPower.sDuration;
 	elseif rTriggerData.sPowerProperty == "power_used_property_group" then
 		sData = rEventData.rPower.sGroup;
-    elseif rTriggerData.sPowerProperty == "power_used_property_range" then
-        sData = rEventData.rPower.sRange;
-    end
-    if string.find(sData:lower(), rTriggerData.sPowerContains:lower()) then
-        return true;
-    end
+	elseif rTriggerData.sPowerProperty == "power_used_property_range" then
+		sData = rEventData.rPower.sRange;
+	end
+	if string.find(sData:lower(), rTriggerData.sPowerContains:lower()) then
+		return true;
+	end
 
-    return false;
+	return false;
 end

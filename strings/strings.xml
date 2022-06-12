@@ -24,11 +24,14 @@
 	<string name="trigger_label_inverted">Invert?</string>
 	<string name="trigger_label_parameters">Parameters</string>
 
+	<string name="after_attack_event">After Attack Roll</string>
 	<string name="before_damage_taken_event">Before Damage Taken</string>
 	<string name="before_damage_taken_event_description">An event that occurs after accounting for any reistances, vulnerabilities, etc, and before the target has any adjustments made to their hit points.</string>
 	<string name="dice_rolled_event">Dice Rolled</string>
 	<string name="power_used_event">Power Used</string>
-	<string name="after_attack_event">After Attack Roll</string>
+	<string name="round_start_event">New Combat Round</string>
+	<string name="turn_start_event">Turn Start</string>
+	<string name="turn_end_event">Turn End</string>
 
 	<string name="combatant_has_effect_condition">Combatant Has Effect</string>
 	<string name="creature_has_trait_condition">Creature Has Trait</string>

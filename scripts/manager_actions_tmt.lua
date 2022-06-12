@@ -152,12 +152,6 @@ function rollIsType(rTriggerData, rEventData)
 end
 
 function rollIsValue(rTriggerData, rEventData)
-	-- TODO Halfling luck can reroll either one of the dice, but not both
-	-- may want to with adv dropping a 1, since the high roll could still be low
-	-- Could consider bool for calculating before/after dropping the die, but then any replacement action gets more complicated
-	-- Could make this handle each roll individually... only that complicates the "but not both" above
-		-- All/Lowest/Highest option on action could resolve that
-		-- How to handle post-drop things then, such as reliable talent etc?
 	if rTriggerData.bIncludeAdvantage and ActionsManager2 and ActionsManager2.decodeAdvantage then
 		ActionsManager2.decodeAdvantage(rEventData.rRoll);
 	end
