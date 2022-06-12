@@ -40,6 +40,7 @@ Wood Board Vectors by Vecteezy
 		<script name="ActionsManagerTMT" file="scripts/manager_actions_tmt.lua" />
 		
 		<script name="CampaignDataManagerTMT" file="scripts/manager_campaigndata_tmt.lua" />
+		<script name="CombatManagerTMT" file="scripts/manager_combat_tmt.lua" />
 		<script name="DesktopManagerTMT" file="scripts/manager_desktop_tmt.lua" />
 		<script name="EffectManagerTMT" file="scripts/manager_effect_tmt.lua" />
 		<script name="ChatManagerTMT" file="scripts/manager_chat_tmt.lua" />
