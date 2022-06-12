@@ -83,7 +83,6 @@ function initializeConditions()
 end
 
 function creatureHasTraitCondition(rTriggerData, rEventData)
-	Debug.chat("creatureHasTraitCondition", rTriggerData, rEventData)
 	if rTriggerData.sCombatant == "source_subject" then
 		return hasTrait(rEventData.rSource, rTriggerData.sType, rTriggerData.sTraitName);
 	elseif rTriggerData.sCombatant == "target_subject" then
@@ -95,7 +94,6 @@ end
 
 function hasTrait(rActor, sTraitType, sTrait)
 	local sNodeType, nodeActor = ActorManager.getTypeAndNode(rActor);
-	Debug.chat("hasTrait", rActor, sTraitType, sTrait, sNodeType, nodeActor)
 	if not nodeActor then
 		return false;
 	end
