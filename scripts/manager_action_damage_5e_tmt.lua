@@ -13,7 +13,7 @@ local stringFormatOriginal;
 
 local rActiveSource = nil;
 local rActiveTarget = nil;
-local rDamageOutput = nil;
+local rActiveDamageOutput = nil;
 local bPrepareForBeforeDamageEvent = false;
 
 rBeforeDamageTakenEvent = {
@@ -21,13 +21,6 @@ rBeforeDamageTakenEvent = {
 	sName = "before_damage_taken_event",
 	aParameters = {"rSource", "rTarget", "nDamage", "nWounds", "nHitpoints", "nTemporaryHitpoints"}
 };
-
--- TODO damage value comparison
-		-- rolls in general? if so roll type needed
-		--		geenral roll here confounded by resitances
--- TODO support for configurable parameters that depend on event params
---		damage exceeds wounds is primary use case here
---			which would need secondary configurable for type of comparison
 
 rTargetHasCurrentHitPointsCondition = nil;
 rCombatantHasTemporaryHitPointsCondition = nil;
@@ -186,6 +179,7 @@ end
 function mathMax(adjustedWounds, zero)
 	math.max = mathMaxOriginal;
 
+	-- TODO account for tempHP damage by checking against the getDamageAdjust output
 	local nWounds = getWounds(rActiveTarget);
 	local nDamage = nWounds - adjustedWounds;
 	local nTotal = getTotalHitPoints(rActiveTarget);
@@ -219,8 +213,8 @@ function getDamageAdjust(rSource, rTarget, nDamage, rDamageOutput)
 end
 
 function decodeDamageText(nDamage, sDamageDesc)
-	rDamageOutput = decodeDamageTextOriginal(nDamage, sDamageDesc);
-	return rDamageOutput;
+	rActiveDamageOutput = decodeDamageTextOriginal(nDamage, sDamageDesc);
+	return rActiveDamageOutput;
 end
 
 function applyDamage(rSource, rTarget, bSecret, sDamage, nTotal)
@@ -235,7 +229,7 @@ function messageDamage(rSource, rTarget, bSecret, sDamageType, sDamageDesc, sTot
 
 	rActiveSource = nil;
 	rActiveTarget = nil;
-	rDamageOutput = nil;
+	rActiveDamageOutput = nil;
 end
 
 function targetHasCurrentHitpoints(rTriggerData, rEventData)
@@ -328,14 +322,12 @@ function getWounds(rActor, sType, nodeActor)
 end
 
 function ensureRemainingHitpoints(rTriggerData, rEventData)
-	-- TODO what to do about damage sharing?
-	-- 		might just work regardless
 	local nCurrent = rEventData.nHitpoints - rEventData.nWounds;
 	local nInitialDamage = rEventData.nDamage;
 	rEventData.nDamage = math.max(rEventData.nDamage, rTriggerData.nMinimum - nCurrent);
 
 	if nInitialDamage ~= rEventData.nDamage then
-		table.insert(rDamageOutput.tNotifications, rTriggerData.sMessage);
+		table.insert(rActiveDamageOutput.tNotifications, rTriggerData.sMessage);
 	end
 end
 
@@ -369,7 +361,7 @@ function modifyDamage(rTriggerData, rEventData)
 	end
 
 	if nInitialDamage ~= rEventData.nDamage then
-		table.insert(rDamageOutput.tNotifications, rTriggerData.sMessage);
+		table.insert(rActiveDamageOutput.tNotifications, rTriggerData.sMessage);
 	end
 end
 
