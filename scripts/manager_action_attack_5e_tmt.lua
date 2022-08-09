@@ -9,8 +9,7 @@ rAfterAttackRollEvent = {
 		"rSource",
 		"rTarget",
 		"nAttack",
-		"sDesc",
-		"sResults"
+		"rRoll",
 	}
 }
 rAttackResultCondition = nil;
@@ -33,7 +32,7 @@ function initializeConditions()
 			"rSource",
 			"rTarget",
 			"nAttack",
-			"sResults"
+			"rRoll"
 		},
 		aConfigurableParameters = {
 			{
@@ -55,27 +54,26 @@ end
 
 function attackMatchesResultCondition(rTriggerData, rEventData)
 	if rTriggerData.sAttackResult == "attack_result_property_hit" then
-		return string.match(rEventData.sResults, "%[HIT%]") ~= nil or string.match(rEventData.sResults, "%[AUTOMATIC HIT%]") ~= nil;
+		return string.match(rEventData.rRoll.sResults, "%[HIT%]") ~= nil or string.match(rEventData.sResults, "%[AUTOMATIC HIT%]") ~= nil;
 	elseif rTriggerData.sAttackResult == "attack_result_property_critical" then
-		return string.match(rEventData.sResults, "%[CRITICAL HIT%]") ~= nil;
+		return string.match(rEventData.rRoll.sResults, "%[CRITICAL HIT%]") ~= nil;
 	elseif rTriggerData.sAttackResult == "attack_result_property_miss" then
-		return string.match(rEventData.sResults, "%[MISS%]") ~= nil
+		return string.match(rEventData.rRoll.sResults, "%[MISS%]") ~= nil
 	elseif rTriggerData.sAttackResult == "attack_result_property_fumble" then
-		return string.match(rEventData.sResults, "%[AUTOMATIC MISS%]") ~= nil or string.match(rEventData.sResults, "%[FUMBLE%]") ~= nil
+		return string.match(rEventData.rRoll.sResults, "%[AUTOMATIC MISS%]") ~= nil or string.match(rEventData.sResults, "%[FUMBLE%]") ~= nil
 	end
 
 	return false;
 end
 
-function applyAttack(rSource, rTarget, bSecret, sAttackType, sDesc, nTotal, sResults)
-	fApplyAttackOriginal(rSource, rTarget, bSecret, sAttackType, sDesc, nTotal, sResults);
+function applyAttack(rSource, rTarget, rRoll)
+	fApplyAttackOriginal(rSource, rTarget, rRoll);
 
 	local rEventData = {
 		rSource = rSource,
 		rTarget = rTarget,
-		nAttack = nTotal,
-		sDesc = sDesc,
-		sResults = sResults
+		nAttack = rRoll.nTotal,
+		rRoll = rRoll,
 	}
 	TriggerManager.fireEvent(rAfterAttackRollEvent.sName, rEventData);
 end
