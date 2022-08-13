@@ -29,7 +29,7 @@ function initializeConditions()
 	rAttackResultCondition = {
 		sName = "attack_result_condition",
 		fCondition = attackMatchesResultCondition,
-		aRequriedParameters = {
+		aRequiredParameters = {
 			"rSource",
 			"rTarget",
 			"nAttack",
