@@ -4,16 +4,9 @@
 --
 
 local getDamageAdjustOriginal;
-local decodeDamageTextOriginal;
 local applyDamageOriginal;
 local messageDamageOriginal;
 
-local mathMaxOriginal;
-local stringFormatOriginal;
-
-local rActiveSource = nil;
-local rActiveTarget = nil;
-local rActiveDamageOutput = nil;
 local bPrepareForBeforeDamageEvent = false;
 
 rBeforeDamageTakenEvent = {
@@ -32,8 +25,6 @@ rModifyDamageAction = nil;
 function onInit()
 	getDamageAdjustOriginal = ActionDamage.getDamageAdjust;
 	ActionDamage.getDamageAdjust = getDamageAdjust;
-	decodeDamageTextOriginal = ActionDamage.decodeDamageText;
-	ActionDamage.decodeDamageText = decodeDamageText;
 	applyDamageOriginal = ActionDamage.applyDamage;
 	ActionDamage.applyDamage = applyDamage;
 	messageDamageOriginal = ActionDamage.messageDamage;
@@ -176,60 +167,40 @@ function intializeActions()
 	TriggerManager.defineAction(rEnsureRemainingHitpointsAction);
 end
 
-function mathMax(adjustedWounds, zero)
-	math.max = mathMaxOriginal;
-
-	-- TODO account for tempHP damage by checking against the getDamageAdjust output
-	local nWounds = getWounds(rActiveTarget);
-	local nDamage = nWounds - adjustedWounds;
-	local nTotal = getTotalHitPoints(rActiveTarget);
-
-	local rEventData = {rSource=rActiveSource, rTarget=rActiveTarget, nDamage=nDamage, nWounds=nWounds, nHitpoints=nTotal};
-	TriggerManager.fireEvent(rBeforeDamageTakenEvent.sName, rEventData);
-
-	return math.max(nWounds - rEventData.nDamage, zero);
-end
-
--- In the event that math.max isn't invoked first, ensure that it is reset.
-function stringFormat(sFormat, ...)
-	math.max = mathMaxOriginal;
-	string.format = stringFormatOriginal;
-	return string.format(sFormat, unpack(arg));
-end
-
-
 function getDamageAdjust(rSource, rTarget, nDamage, rDamageOutput)
-	local results = {getDamageAdjustOriginal(rSource, rTarget, nDamage, rDamageOutput)};
+	rTarget.rDamageOutput = rDamageOutput;
+	local nDamageAdjust, bVulnerable, bResist = getDamageAdjustOriginal(rSource, rTarget, nDamage, rDamageOutput);
 
 	if bPrepareForBeforeDamageEvent then
-		mathMaxOriginal = math.max;
-		math.max = mathMax;
-		stringFormatOriginal = string.format;
-		string.format = stringFormat;
+		local nWounds = getWounds(rTarget);
+		local nTotal = getTotalHitPoints(rTarget);
+		local nTemporaryHitpoints = getTemporaryHitPoints(rTarget);
+		local rEventData = {
+			rSource = rSource,
+			rTarget = rTarget,
+			nDamage = rDamageOutput.nVal + nDamageAdjust,
+			nWounds = nWounds,
+			nHitpoints = nTotal,
+			nTemporaryHitpoints = nTemporaryHitpoints
+		};
+		TriggerManager.fireEvent(rBeforeDamageTakenEvent.sName, rEventData);
+
+		if rEventData.nAdjust then
+			nDamageAdjust = nDamageAdjust + rEventData.nAdjust;
+		end
 	end
 
 	bPrepareForBeforeDamageEvent = false;
-	return unpack(results);
+	return nDamageAdjust, bVulnerable, bResist;
 end
 
-function decodeDamageText(nDamage, sDamageDesc)
-	rActiveDamageOutput = decodeDamageTextOriginal(nDamage, sDamageDesc);
-	return rActiveDamageOutput;
-end
-
-function applyDamage(rSource, rTarget, bSecret, sDamage, nTotal)
-	rActiveSource = rSource;
-	rActiveTarget = rTarget;
+function applyDamage(rSource, rTarget, rRoll)
 	bPrepareForBeforeDamageEvent = true;
-	applyDamageOriginal(rSource, rTarget, bSecret, sDamage, nTotal);
+	applyDamageOriginal(rSource, rTarget, rRoll);
 end
 
-function messageDamage(rSource, rTarget, bSecret, sDamageType, sDamageDesc, sTotal, sExtraResult)
-	messageDamageOriginal(rSource, rTarget, bSecret, sDamageType, sDamageDesc, sTotal, sExtraResult);
-
-	rActiveSource = nil;
-	rActiveTarget = nil;
-	rActiveDamageOutput = nil;
+function messageDamage(rSource, rTarget, rRoll)
+	messageDamageOriginal(rSource, rTarget, rRoll);
 end
 
 function targetHasCurrentHitpoints(rTriggerData, rEventData)
@@ -322,12 +293,11 @@ function getWounds(rActor, sType, nodeActor)
 end
 
 function ensureRemainingHitpoints(rTriggerData, rEventData)
-	local nCurrent = rEventData.nHitpoints - rEventData.nWounds;
-	local nInitialDamage = rEventData.nDamage;
-	rEventData.nDamage = math.max(rEventData.nDamage, rTriggerData.nMinimum - nCurrent);
+	local nCurrent = rEventData.nHitpoints + rEventData.nTemporaryHitpoints - rEventData.nWounds;
+	rEventData.nAdjust = math.min(0, nCurrent - rTriggerData.nMinimum - rEventData.nDamage);
 
-	if nInitialDamage ~= rEventData.nDamage then
-		table.insert(rActiveDamageOutput.tNotifications, rTriggerData.sMessage);
+	if rEventData.nAdjust ~= 0 then
+		table.insert(rEventData.rTarget.rDamageOutput.tNotifications, rTriggerData.sMessage);
 	end
 end
 
@@ -361,7 +331,7 @@ function modifyDamage(rTriggerData, rEventData)
 	end
 
 	if nInitialDamage ~= rEventData.nDamage then
-		table.insert(rActiveDamageOutput.tNotifications, rTriggerData.sMessage);
+		table.insert(rEventData.rTarget.rDamageOutput.tNotifications, rTriggerData.sMessage);
 	end
 end
 

@@ -54,13 +54,13 @@ end
 
 function attackMatchesResultCondition(rTriggerData, rEventData)
 	if rTriggerData.sAttackResult == "attack_result_property_hit" then
-		return string.match(rEventData.rRoll.sResults, "%[HIT%]") ~= nil or string.match(rEventData.sResults, "%[AUTOMATIC HIT%]") ~= nil;
+		return (rEventData.rRoll.sResult == "hit") or (rEventData.rRoll.sResult == "crit");
 	elseif rTriggerData.sAttackResult == "attack_result_property_critical" then
-		return string.match(rEventData.rRoll.sResults, "%[CRITICAL HIT%]") ~= nil;
+		return rEventData.rRoll.sResult == "crit";
 	elseif rTriggerData.sAttackResult == "attack_result_property_miss" then
-		return string.match(rEventData.rRoll.sResults, "%[MISS%]") ~= nil
+		return (rEventData.rRoll.sResult == "miss") or (rEventData.rRoll.sResult == "fumble");
 	elseif rTriggerData.sAttackResult == "attack_result_property_fumble" then
-		return string.match(rEventData.rRoll.sResults, "%[AUTOMATIC MISS%]") ~= nil or string.match(rEventData.sResults, "%[FUMBLE%]") ~= nil
+		return rEventData.rRoll.sResult == "miss";
 	end
 
 	return false;
