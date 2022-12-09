@@ -226,9 +226,9 @@ end
 function damageIsValue(rTriggerData, rEventData)
 	if rTriggerData.sCompareTo == "target_hitpoints_parameter" then
 		local nCurrent = getCurrentHitPoints(rEventData.rTarget);
-		return TriggerData.resolveComparison(-rEventData.nDamage, nCurrent, rTriggerData.sComparison);
+		return TriggerData.resolveComparison(rEventData.nDamage, nCurrent, rTriggerData.sComparison);
 	else
-		return TriggerData.resolveComparison(-rEventData.nDamage, rTriggerData.nCompareAgainst, rTriggerData.sComparison);
+		return TriggerData.resolveComparison(rEventData.nDamage, rTriggerData.nCompareAgainst, rTriggerData.sComparison);
 	end
 end
 
