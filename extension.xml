@@ -66,6 +66,14 @@ Wood Board Vectors by Vecteezy
 
 		<includefile source="graphics/graphics_icons.xml" />
 		<includefile source="strings/strings.xml" />
+		
+		<script name="PowerUpTMT">
+			function onInit()
+				if PowerUp then
+					PowerUp.registerExtension("Trigger Me Timbers", "dev_version");
+				end
+			end
+		</script>
 	</base>
 
 	<announcement text="Trigger Me Timbers dev_version by MeAndUnique." icon="TriggerMeTimbers" font="emotefont" />
