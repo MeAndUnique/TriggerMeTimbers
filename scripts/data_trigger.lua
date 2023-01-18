@@ -39,8 +39,27 @@ rComparisonParameter = {
 	},
 };
 
+rAbilityParameter = nil
+
 function onInit()
+	initializeParameters();
 	initializeConditions();
+end
+
+function initializeParameters()
+	rAbilityParameter = {
+		sName = "sAbility",
+		sDisplay = "ability_parameter",
+		sType = "combo",
+		aDefinedValues = {},
+	};
+	for _,sAbility in ipairs(DataCommon.abilities) do
+		table.insert(rAbilityParameter.aDefinedValues,
+		{
+			sValue = sAbility,
+			sDescription = StringManager.capitalize(sAbility),
+		});
+	end
 end
 
 function initializeConditions()

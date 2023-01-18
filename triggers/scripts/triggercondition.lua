@@ -4,7 +4,7 @@
 --
 
 local bUpdatingName = false;
-local aEventParameters;
+local aParameters;
 
 function onInit()
 	conditionname.onSelect = onConditionNameSelected;
@@ -22,8 +22,17 @@ function update(bReadOnly)
 end
 
 function setEventName(sEventName)
-	aEventParameters = TriggerManager.getParametersForEvent(sEventName)
-	for _,rConditionDefinition in pairs(TriggerManager.getConditionDefinitionsForEventParameters(aEventParameters)) do
+	aParameters = TriggerManager.getParametersForEvent(sEventName);
+	resolveParameters();
+end
+
+function setActionName(sActionName)
+	aParameters = TriggerManager.getParametersForAction(sActionName);
+	resolveParameters();
+end
+
+function resolveParameters()
+	for _,rConditionDefinition in pairs(TriggerManager.getConditionDefinitionsForParameters(aParameters)) do
 		conditionname.add(rConditionDefinition.sName, Interface.getString(rConditionDefinition.sName));
 		conditionname.addTooltip(rConditionDefinition.sName, Interface.getString(rConditionDefinition.sDescription));
 	end
@@ -67,5 +76,5 @@ function rebuildParameters(sConditionName, bRebuild)
 		return;
 	end
 
-	parameters.initializeParameters(rCondition.aConfigurableParameters, aEventParameters, bRebuild)
+	parameters.initializeParameters(rCondition.aConfigurableParameters, aParameters, bRebuild)
 end

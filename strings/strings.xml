@@ -25,6 +25,8 @@
 	<string name="trigger_label_parameters">Parameters</string>
 
 	<string name="after_attack_event">After Attack Roll</string>
+	<string name="after_save_event">After Saving Throw</string>
+	<string name="after_save_event_description">An event that occurs after a saving throw has been made and resolved.</string>
 	<string name="before_damage_taken_event">Before Damage Taken</string>
 	<string name="before_damage_taken_event_description">An event that occurs after accounting for any reistances, vulnerabilities, etc, and before the target has any adjustments made to their hit points.</string>
 	<string name="dice_rolled_event">Dice Rolled</string>
@@ -34,14 +36,16 @@
 	<string name="turn_end_event">Turn End</string>
 
 	<string name="combatant_has_effect_condition">Combatant Has Effect</string>
+	<string name="combatant_has_temporary_hit_points_condition">Combatant Has Temporary Hit Points</string>
 	<string name="creature_has_trait_condition">Creature Has Trait</string>
+	<string name="damage_type_condition">Damage Is Type</string>
 	<string name="damage_value_condition">Damage Is Value</string>
+	<string name="damage_value_condition_description">Does the damage consist of a certain type?</string>
 	<string name="is_source_condition">Is Source</string>
 	<string name="is_target_condition">Is Target</string>
 	<string name="roll_is_type_condition">Roll Is Type</string>
 	<string name="roll_is_value_condition">Roll Is Value</string>
 	<string name="target_has_current_hit_points_condition">Target Has Current Hit Points</string>
-	<string name="combatant_has_temporary_hit_points_condition">Combatant Has Temporary Hit Points</string>
 
 	<!-- Actions -->
 	<string name="ensure_target_has_remaining_hit_points_action">Ensure Target Has Remaining Hit Points</string>
@@ -115,6 +119,13 @@
 	<string name="attack_result_property_miss">Miss</string>
 	<string name="attack_result_property_critical">Critical Hit</string>
 	<string name="attack_result_property_fumble">Automatic Miss</string>
+	<string name="power_used_property_group">Group</string>
+
+	<!-- Save result condition -->
+	<string name="save_result_condition">Saving Throw Is Result</string>
+	<string name="save_result_property_parameter">Result</string>
+	<string name="save_result_property_pass">Pass</string>
+	<string name="save_result_property_fail">Fail</string>
 
 	<!-- Apply healing action -->
 	<string name="apply_heal_to_combatant_action">Apply Healing to Combatant</string>
@@ -144,4 +155,10 @@
 	<string name="unknown_condition_error">ERROR: Unknown condition ID: %s</string>
 	<string name="unknown_parameter_error">ERROR: Unknown parameter ID: %s</string>
 	<string name="unknown_action_error">ERROR: Unknown action ID: %s</string>
+
+	<!-- Apply save action -->
+	<string name="roll_save_action">Roll Saving Throw</string>
+	<string name="save_target_type_parameter">DC Calculation</string>
+	<string name="save_target_parameter">Save DC</string>
+	<string name="half_damage_parameter">Half of Damage or 10</string>
 </root>
