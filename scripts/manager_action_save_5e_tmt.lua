@@ -94,7 +94,7 @@ function initializeActions()
 end
 
 function onSave(rSource, rTarget, rRoll)
-	-- Autofailures are not sent to applySave by the ruleset and so interruptions must be ended here in that event.
+	-- Autofailures are not sent to applySave by the ruleset and so interruptions must be ended here in that scenario.
 	local sInterruptionKey;
 	local bAutoFail = rRoll.sDesc:match("%[AUTOFAIL%]");
 	if bAutoFail or not rRoll.nTarget then
@@ -116,7 +116,6 @@ function onSave(rSource, rTarget, rRoll)
 end
 
 function applySave(rSource, rOrigin, rAction, sUser)
-	-- TODO handle the fact that autofail saves never reach here
 	local sInterruptionKey = rAction.sSaveDesc:match("%[INTERRUPTION: ([^%]]+)");
 	if sInterruptionKey then
 		rAction.sSaveDesc:gsub("%[INTERRUPTION: [%]]+%]", "");

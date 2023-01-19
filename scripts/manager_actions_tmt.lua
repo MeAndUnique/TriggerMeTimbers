@@ -12,7 +12,7 @@ rRollIsTypeCondition = nil;
 rRollValueCondition = nil;
 
 rRerollDiceAction = nil;
-rReplaceDiceAction = nil; -- TODO define
+rReplaceDiceAction = nil;
 
 local resolveActionOriginal;
 

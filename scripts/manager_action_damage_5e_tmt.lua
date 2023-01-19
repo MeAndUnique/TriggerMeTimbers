@@ -16,6 +16,7 @@ rDamageTypeParameter = nil;
 
 rTargetHasCurrentHitPointsCondition = nil;
 rCombatantHasTemporaryHitPointsCondition = nil;
+rDamageTypeCondition = nil;
 rDamageValueCondition = nil;
 
 rEnsureRemainingHitpointsAction = nil;
@@ -96,10 +97,6 @@ function initializeConditions()
 		},
 	};
 
-	-- TODO figure out how to handle both on roll and before damage taken events cleanly
-	--	the problem largely being that we want to differentiate between rRoll parameters that can be edited meaningfully and those that cant
-	--	this might be fine to leave as is and let unexpected outcomes happen
-	--	though in that case how does Elemental Adept work?
 	rDamageTypeCondition = {
 		sName = "damage_type_condition",
 		sDescription = "damage_type_condition_description",

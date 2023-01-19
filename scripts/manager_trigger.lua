@@ -275,15 +275,6 @@ function loadParametersFromNode(nodeContainer)
 	return tParameters;
 end
 
--- TODO if supporting interruptions how does it work across triggers?
---	Other triggers are unaffected?
---		ensure other triggers are avoided when resuming
---	subsequent actions of the current trigger are skipped
---		upon resume remember which action for this trigger
---	previous in-sequence events are unaffected
---		be sure not to double dip when resuming
---	next in-sequence events are interrupted
---		make sure other triggers get to fire
 function fireEvent(sEventName, rEventData, rResumedInterruption)
 	-- TODO break this down some more, theres a lot of decision-making going on here.
 	local aEventTriggerNodes = tRegisteredEventTriggers[sEventName];
