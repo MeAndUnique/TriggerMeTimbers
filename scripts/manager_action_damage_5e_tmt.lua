@@ -6,17 +6,17 @@
 local getDamageAdjustOriginal;
 local applyDamageOriginal;
 local messageDamageOriginal;
+local resolveDamageOriginal;
 
 local bPrepareForBeforeDamageEvent = false;
 
-rBeforeDamageTakenEvent = {
-	sDescription = "before_damage_taken_event_description",
-	sName = "before_damage_taken_event",
-	aParameters = {"rSource", "rTarget", "nDamage", "nWounds", "nHitpoints", "nTemporaryHitpoints"}
-};
+rBeforeDamageTakenEvent = nil;
+
+rDamageTypeParameter = nil;
 
 rTargetHasCurrentHitPointsCondition = nil;
 rCombatantHasTemporaryHitPointsCondition = nil;
+rDamageTypeCondition = nil;
 rDamageValueCondition = nil;
 
 rEnsureRemainingHitpointsAction = nil;
@@ -30,10 +30,42 @@ function onInit()
 	messageDamageOriginal = ActionDamage.messageDamage;
 	ActionDamage.messageDamage = messageDamage;
 
-	TriggerManager.defineEvent(rBeforeDamageTakenEvent);
+	if ActionDamageCA then
+		resolveDamageOriginal = ActionDamageCA.resolveDamage;
+		ActionDamageCA.resolveDamage = resolveDamage;
+	end
 
+	initializeEvents();
+	initializeParameters();
 	initializeConditions();
 	intializeActions();
+end
+
+function initializeEvents()
+	rBeforeDamageTakenEvent = {
+		sDescription = "before_damage_taken_event_description",
+		sName = "before_damage_taken_event",
+		aParameters = {"rSource", "rTarget", "rRoll", "nDamage", "nWounds", "nHitpoints", "nTemporaryHitpoints", "bInterruptable"},
+		fResume = resumeApplyDamage
+	};
+
+	TriggerManager.defineEvent(rBeforeDamageTakenEvent);
+end
+
+function initializeParameters()
+	rDamageTypeParameter = {
+		sName = "sDamageType",
+		sDisplay = "damage_type_parameter",
+		sType = "combo",
+		aDefinedValues = {},
+	};
+	for _,sDamage in ipairs(DataCommon.dmgtypes) do
+		table.insert(rDamageTypeParameter.aDefinedValues,
+		{
+			sValue = sDamage,
+			sDescription = StringManager.capitalize(sDamage),
+		});
+	end
 end
 
 function initializeConditions()
@@ -62,6 +94,16 @@ function initializeConditions()
 				sDisplay = "value_parameter",
 				sType = "number",
 			},
+		},
+	};
+
+	rDamageTypeCondition = {
+		sName = "damage_type_condition",
+		sDescription = "damage_type_condition_description",
+		fCondition = damageIsType,
+		aRequiredParameters = {"rRoll"},
+		aConfigurableParameters = {
+			rDamageTypeParameter,
 		},
 	};
 
@@ -94,6 +136,7 @@ function initializeConditions()
 
 	TriggerManager.defineCondition(rTargetHasCurrentHitPointsCondition);
 	TriggerManager.defineCondition(rCombatantHasTemporaryHitPointsCondition);
+	TriggerManager.defineCondition(rDamageTypeCondition);
 	TriggerManager.defineCondition(rDamageValueCondition);
 end
 
@@ -172,35 +215,86 @@ function getDamageAdjust(rSource, rTarget, nDamage, rDamageOutput)
 	local nDamageAdjust, bVulnerable, bResist = getDamageAdjustOriginal(rSource, rTarget, nDamage, rDamageOutput);
 
 	if bPrepareForBeforeDamageEvent then
-		local nWounds = getWounds(rTarget);
-		local nTotal = getTotalHitPoints(rTarget);
-		local nTemporaryHitpoints = getTemporaryHitPoints(rTarget);
-		local rEventData = {
-			rSource = rSource,
-			rTarget = rTarget,
-			nDamage = rDamageOutput.nVal + nDamageAdjust,
-			nWounds = nWounds,
-			nHitpoints = nTotal,
-			nTemporaryHitpoints = nTemporaryHitpoints
-		};
-		TriggerManager.fireEvent(rBeforeDamageTakenEvent.sName, rEventData);
-
-		if rEventData.nAdjust then
-			nDamageAdjust = nDamageAdjust + rEventData.nAdjust;
-		end
+		nDamageAdjust, bVulnerable, bResist = fireBeforeDamageEvent(rSource, rTarget, rDamageOutput, nDamageAdjust, bVulnerable, bResist);
 	end
-
 	bPrepareForBeforeDamageEvent = false;
+
 	return nDamageAdjust, bVulnerable, bResist;
 end
 
 function applyDamage(rSource, rTarget, rRoll)
 	bPrepareForBeforeDamageEvent = true;
+	rTarget.rRoll = rRoll;
 	applyDamageOriginal(rSource, rTarget, rRoll);
+	local rPendingInterruption = rTarget.rPendingInterruption;
+	if rPendingInterruption then
+		TriggerManager.fireInterruption(rPendingInterruption.sEventName, rPendingInterruption.rEventData, rPendingInterruption.rInterruption);
+	end
 end
 
 function messageDamage(rSource, rTarget, rRoll)
-	messageDamageOriginal(rSource, rTarget, rRoll);
+	if not rTarget.rPendingInterruption then
+		messageDamageOriginal(rSource, rTarget, rRoll);
+	end
+end
+
+function resolveDamage(rTarget, rRoll, rComplexDamage)
+	if not rTarget.rPendingInterruption then
+		resolveDamageOriginal(rTarget, rRoll, rComplexDamage);
+	end
+end
+
+function fireBeforeDamageEvent(rSource, rTarget, rDamageOutput, nDamageAdjust, bVulnerable, bResist)
+	local nWounds = getWounds(rTarget);
+	local nTotal = getTotalHitPoints(rTarget);
+	local nTemporaryHitpoints = getTemporaryHitPoints(rTarget);
+
+	local rResumedInterruption = rTarget.rPendingInterruption;
+	if rResumedInterruption then
+		nDamageAdjust = rResumedInterruption.rEventData.nDamageAdjust;
+		bVulnerable = rResumedInterruption.rEventData.bVulnerable;
+		bResist = rResumedInterruption.rEventData.bResist;
+		for sName,vValue in pairs(rResumedInterruption.rEventData.rDamageOutput) do
+			rDamageOutput[sName] = vValue;
+		end
+		rTarget.rPendingInterruption = nil;
+	end
+
+	local rEventData = {
+		rSource = rSource,
+		rTarget = rTarget,
+		rRoll = rTarget.rRoll,
+		nDamage = rDamageOutput.nVal + nDamageAdjust,
+		nWounds = nWounds,
+		nHitpoints = nTotal,
+		nTemporaryHitpoints = nTemporaryHitpoints
+	};
+
+	local rInterruption = TriggerManager.fireEvent(rBeforeDamageTakenEvent.sName, rEventData, (rResumedInterruption or {}).rInterruption);
+	if rInterruption then
+		rTarget.rPendingInterruption = {
+			sEventName = rBeforeDamageTakenEvent.sName,
+			rEventData = rEventData,
+			rInterruption = rInterruption
+		};
+		rEventData.rRoll.nOriginalDamage = rEventData.rRoll.nTotal;
+		rEventData.nDamageAdjust = nDamageAdjust;
+		rEventData.bVulnerable = bVulnerable;
+		rEventData.bResist = bResist;
+		rEventData.rDamageOutput = UtilityManager.copyDeep(rDamageOutput);
+
+		-- Ensure that no damage is dealt by the remainder of the applyDamage execution.
+		nDamageAdjust = -rDamageOutput.nVal;
+	elseif rEventData.nAdjust then
+		nDamageAdjust = nDamageAdjust + rEventData.nAdjust;
+	end
+
+	return nDamageAdjust, bVulnerable, bResist;
+end
+
+function resumeApplyDamage(rEventData, _)
+	rEventData.rRoll.nTotal = rEventData.rRoll.nOriginalDamage;
+	applyDamage(rEventData.rSource, rEventData.rTarget, rEventData.rRoll);
 end
 
 function targetHasCurrentHitpoints(rTriggerData, rEventData)
@@ -221,6 +315,21 @@ function combatantHasTemporaryHitpoints(rTriggerData, rEventData)
 	end
 
 	return TriggerData.resolveComparison(nTemporary, rTriggerData.nCompareAgainst, rTriggerData.sComparison);
+end
+
+function damageIsType(rTriggerData, rEventData)
+	for sDamageTypes,_ in pairs(rEventData.rRoll.aDamageTypes or {}) do
+		if sDamageTypes:match(rTriggerData.sDamageType) then
+			return true;
+		end
+	end
+	for _,rClause in ipairs(rEventData.rRoll.clauses or {}) do
+		if rClause.dmgtype:match(rTriggerData.sDamageType) then
+			return true;
+		end
+	end
+
+	return false;
 end
 
 function damageIsValue(rTriggerData, rEventData)
@@ -293,6 +402,8 @@ function getWounds(rActor, sType, nodeActor)
 end
 
 function ensureRemainingHitpoints(rTriggerData, rEventData)
+	-- TODO why not just decrease wounds?
+	--	because nWounds is set early in applyDamage
 	local nCurrent = rEventData.nHitpoints + rEventData.nTemporaryHitpoints - rEventData.nWounds;
 	rEventData.nAdjust = math.min(0, nCurrent - rTriggerData.nMinimum - rEventData.nDamage);
 

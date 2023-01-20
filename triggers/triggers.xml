@@ -264,10 +264,36 @@
 			</tooltipcomboboxc>
 			<parameterlist />
 
+			<label name="label_conditions">
+				<anchored to="parameters">
+					<left />
+					<top anchor="bottom" offset="10" />
+					<right parent="" offset="-5" />
+				</anchored>
+				<static textres="trigger_label_conditions" />
+			</label>
+			<button_iedit name="conditions_iedit">
+				<anchored to="label_conditions" position="righthigh" offset="-20,0" />
+				<target>conditions</target>
+			</button_iedit>
+			<button_iadd name="conditions_iadd">
+				<anchored to="conditions_iedit" position="lefthigh" offset="5,0" />
+				<target>conditions</target>
+			</button_iadd>
+			<list_triggercomponents name="conditions">
+				<anchored to="label_conditions">
+					<left offset="10" />
+					<top anchor="bottom" offset="5" />
+					<right parent="" />
+				</anchored>
+				<datasource>.conditions</datasource>
+				<class>trigger_condition_item</class>
+			</list_triggercomponents>
+
 			<line_column name="divider">
 				<anchored>
 					<left />
-					<top parent="parameters" anchor="bottom" offset="5" />
+					<top parent="conditions" anchor="bottom" offset="5" />
 					<right />
 				</anchored>
 			</line_column>

@@ -112,8 +112,8 @@ function hasTrait(rActor, sTraitType, sTrait)
 		end
 	else
 		local sTraitLower = StringManager.trim(sTrait):lower();
-		for _,v in pairs(DB.getChildren(nodeActor, "traits")) do
-			if StringManager.trim(DB.getValue(v, "name", "")):lower() == sTraitLower then
+		for _,nodeTrait in pairs(DB.getChildren(nodeActor, "traits")) do
+			if StringManager.trim(DB.getValue(nodeTrait, "name", "")):lower() == sTraitLower then
 				return true;
 			end
 		end

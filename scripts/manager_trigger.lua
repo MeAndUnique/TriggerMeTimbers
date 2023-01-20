@@ -8,6 +8,8 @@
 -- An Event consists of zero or more Conditions.
 	-- All of an event's Conditions must be met in order for the event to fire.
 
+OOB_MSGTYPE_END_INTERRUPTION = "end_trigger_interruption";
+
 local tEventDefinitions = {};
 local tConditionDefinitions = {};
 local tActionDefinitions = {};
@@ -20,6 +22,7 @@ local nInterruptedEvents = 0;
 function onInit()
 	if Session.IsHost then
 		DB.createNode("activetrigger").setPublic(true);
+		OOBManager.registerOOBMsgHandler(OOB_MSGTYPE_END_INTERRUPTION, handleEndTriggerInterruption);
 	end
 
 	DB.addHandler("activetrigger.*", "onChildUpdate", onActiveTriggerUpdated);
@@ -28,10 +31,14 @@ function onInit()
 	for _,nodeTrigger in pairs(DB.getChildren("activetrigger")) do
 		registerTrigger(nodeTrigger);
 	end
+
+	for _,aEventTriggers in pairs(tRegisteredEventTriggers) do
+		table.sort(aEventTriggers, sortTriggerNodes);
+	end
 end
 
-function onActiveTriggerUpdated(nodeParent, bListchanged)
-	registerTrigger(nodeParent);
+function onActiveTriggerUpdated(nodeParent)
+	registerTrigger(nodeParent, true);
 end
 
 function onActiveTriggerDeleted(nodeToBeDeleted)
@@ -91,11 +98,15 @@ function getConditionDefinitions()
 end
 
 function getConditionDefinitionsForEvent(vEvent)
-	return getConditionDefinitionsForEventParameters(getParametersForEvent(vEvent));
+	return getConditionDefinitionsForParameters(getParametersForEvent(vEvent));
 end
 
-function getConditionDefinitionsForEventParameters(aEventParameters)
-	local aConditions = {}
+function getConditionDefinitionsForAction(vAction)
+	return getConditionDefinitionsForParameters(getParametersForAction(vAction));
+end
+
+function getConditionDefinitionsForParameters(aEventParameters)
+	local aConditions = {};
 	for _,rConditionDefinition in pairs(tConditionDefinitions) do
 		if hasRequiredParameters(rConditionDefinition.aRequiredParameters, aEventParameters) then
 			table.insert(aConditions, rConditionDefinition);
@@ -134,6 +145,14 @@ function getActionDefinitionsForCommonEventParameters(aEventParameters)
 	return aActions;
 end
 
+function getParametersForAction(vAction)
+	local rAction = vAction;
+	if type(vAction) == "string" then
+		rAction = tActionDefinitions[vAction];
+	end
+	return (rAction.rCreatedEvent or {}).aParameters;
+end
+
 function hasRequiredParameters(aRequiredParameters, aEventParameters)
 	local bHasRequirements = true;
 	for _,sParameterName in ipairs(aRequiredParameters or {}) do
@@ -145,18 +164,28 @@ function hasRequiredParameters(aRequiredParameters, aEventParameters)
 	return bHasRequirements;
 end
 
-function registerTrigger(nodeTrigger)
+function registerTrigger(nodeTrigger, bSort)
+	unregisterTrigger(nodeTrigger); -- Ensure that changing events is handled correctly.
 	local rTrigger = loadTriggerFromNode(nodeTrigger);
 	tRegisteredTriggers[nodeTrigger] = rTrigger;
 
 	for sEventName,_ in pairs(rTrigger.tEventLists) do
-		local tEventTriggers = tRegisteredEventTriggers[sEventName];
-		if not tEventTriggers then
-			tEventTriggers = {};
-			tRegisteredEventTriggers[sEventName] = tEventTriggers;
+		local aEventTriggers = tRegisteredEventTriggers[sEventName];
+		if not aEventTriggers then
+			aEventTriggers = {};
+			tRegisteredEventTriggers[sEventName] = aEventTriggers;
 		end
-		tEventTriggers[nodeTrigger] = rTrigger;
+		table.insert(aEventTriggers, nodeTrigger)
+
+		if bSort then
+			table.sort(aEventTriggers, sortTriggerNodes);
+		end
 	end
+end
+
+function sortTriggerNodes(nodeLeft, nodeRight)
+	-- Sort in descending priority
+	return tRegisteredTriggers[nodeRight].nPriority < tRegisteredTriggers[nodeLeft].nPriority;
 end
 
 function unregisterTrigger(nodeTrigger)
@@ -166,17 +195,20 @@ function unregisterTrigger(nodeTrigger)
 	end
 
 	for sEventName,_ in pairs(rTrigger.tEventLists) do
-		local tEventTriggers = tRegisteredEventTriggers[sEventName];
-		if tEventTriggers then
-			tEventTriggers[nodeTrigger] = nil;
+		local aEventTriggers = tRegisteredEventTriggers[sEventName];
+		for nIndex,nodeEventTrigger in ipairs(aEventTriggers) do
+			if nodeEventTrigger == nodeTrigger then
+				table.remove(aEventTriggers, nIndex);
+				break;
+			end
 		end
 	end
-	tRegisteredTriggers[nodeTrigger] = nil;
 end
-
 
 function loadTriggerFromNode(nodeTrigger)
 	local rTrigger = {
+		nodeTrigger = nodeTrigger,
+		nPriority = DB.getValue(nodeTrigger, "priority", 0),
 		tEventLists = {},
 		aActions = {}
 	};
@@ -189,7 +221,7 @@ function loadTriggerFromNode(nodeTrigger)
 		end
 		table.insert(aEvents, rEvent);
 	end
-	for _,nodeAction in pairs(DB.getChildren(nodeTrigger, "actions")) do
+	for _,nodeAction in ipairs(UtilityManager.getSortedTable(DB.getChildren(nodeTrigger, "actions"))) do
 		local rAction = loadTriggerActionFromNode(nodeAction);
 		table.insert(rTrigger.aActions, rAction);
 	end
@@ -198,10 +230,10 @@ end
 
 function loadTriggerEventFromNode(nodeEvent)
 	local rEvent = {
-		sName = DB.getValue(nodeEvent, "eventname", "");
-		aConditions = {}
+		sName = DB.getValue(nodeEvent, "eventname", ""),
+		aConditions = {},
 	};
-	for _,nodeCondition in pairs(DB.getChildren(nodeEvent, "conditions")) do
+	for _,nodeCondition in ipairs(UtilityManager.getSortedTable(DB.getChildren(nodeEvent, "conditions"))) do
 		local rCondition = loadTriggerConditionFromNode(nodeCondition);
 		table.insert(rEvent.aConditions, rCondition);
 	end
@@ -220,8 +252,13 @@ end
 function loadTriggerActionFromNode(nodeAction)
 	local rAction = {
 		sName = DB.getValue(nodeAction, "actionname", "");
-		rData = loadParametersFromNode(nodeAction)
+		rData = loadParametersFromNode(nodeAction),
+		aConditions = {},
 	};
+	for _,nodeCondition in ipairs(UtilityManager.getSortedTable(DB.getChildren(nodeAction, "conditions"))) do
+		local rCondition = loadTriggerConditionFromNode(nodeCondition);
+		table.insert(rAction.aConditions, rCondition);
+	end
 	return rAction;
 end
 
@@ -238,35 +275,34 @@ function loadParametersFromNode(nodeContainer)
 	return tParameters;
 end
 
--- TODO if supporting interruptions how does it work across triggers?
---	Other triggers are unaffected?
---		ensure other triggers are avoided when resuming
---	subsequent actions of the current trigger are skipped
---		upon resume remember which action for this trigger
---	previous in-sequence events are unaffected
---		be sure not to double dip when resuming
---	next in-sequence events are interrupted
---		make sure other triggers get to fire
-function fireEvent(sEventName, rEventData)
-	local tEventTriggers = tRegisteredEventTriggers[sEventName];
-	local aInterruptions = {};
-	for _,rTrigger in pairs(tEventTriggers or {}) do
-		for _,rEvent in ipairs(rTrigger.tEventLists[sEventName]) do
-			local bConditionsMet = checkConditions(rEvent, rEventData);
-			if bConditionsMet then
-				local rInterruption = invokeActions(rTrigger, rEventData);
-				if rInterruption then
-					table.insert(aInterruptions, rInterruption);
+function fireEvent(sEventName, rEventData, rResumedInterruption)
+	-- TODO break this down some more, theres a lot of decision-making going on here.
+	local aEventTriggerNodes = tRegisteredEventTriggers[sEventName];
+	local rInterruptedTrigger = (rInterruptedTrigger or {}).rTrigger;
+	local rInterruption;
+	local bShouldTrigger = rInterruptedTrigger == nil;
+	for _,nodeTrigger in ipairs(aEventTriggerNodes or {}) do
+		local rTrigger = tRegisteredTriggers[nodeTrigger];
+		if bShouldTrigger then
+			for _,rEvent in ipairs(rTrigger.tEventLists[sEventName]) do
+				local bConditionsMet = checkConditions(rEvent.aConditions, rEventData);
+				if bConditionsMet then
+					rInterruption = invokeActions(rTrigger, rEventData, rResumedInterruption);
+					break;
 				end
 			end
+			if rInterruption then
+				break;
+			end
 		end
+		bShouldTrigger = bShouldTrigger or rTrigger == rInterruptedTrigger;
 	end
-	return aInterruptions;
+	return rInterruption;
 end
 
-function checkConditions(rEvent, rEventData)
+function checkConditions(aConditions, rEventData)
 	local bConditionsMet = true;
-	for _,rCondition in ipairs(rEvent.aConditions) do
+	for _,rCondition in ipairs(aConditions) do
 		local rConditionDefinition = tConditionDefinitions[rCondition.sName];
 		if not (rConditionDefinition and (rCondition.bInverted ~= rConditionDefinition.fCondition(rCondition.rData, rEventData))) then
 			bConditionsMet = false;
@@ -276,55 +312,66 @@ function checkConditions(rEvent, rEventData)
 	return bConditionsMet;
 end
 
-function invokeActions(rTrigger, rEventData)
-	for nIndex,rAction in ipairs(rTrigger.aActions or {}) do
-		local rActionDefinition = tActionDefinitions[rAction.sName];
-		if rActionDefinition then
-			local rInterruption = rActionDefinition.fAction(rAction.rData, rEventData);
-			if rInterruption then
-				-- TODO multiple triggers can interrupt the same event, and some interruptions may actually block
-				--	interruption actions should actually fire in their own loop
-				--	the event itself should be responsible for defining how to resume from interruption
-				--	the above info concerning sequence handling applies the same
-				return {rInterruption = rInterruption, rTrigger = rTrigger, nActionIndex = nIndex};
+function invokeActions(rTrigger, rEventData, rResumedInterruption)
+	-- TODO break this down some more, theres a lot of decision-making going on here.
+	local rInterruptedAction = (rResumedInterruption or {}).rAction;
+	if rInterruptedAction and not checkConditions(rInterruptedAction.aConditions, rResumedInterruption.rActionEventData) then
+		return;
+	end
+	local bShouldInvoke = rInterruptedAction == nil;
+	for _,rAction in  ipairs(rTrigger.aActions) do
+		if bShouldInvoke then
+			local rActionDefinition = tActionDefinitions[rAction.sName];
+			if rActionDefinition then
+				-- TODO Allow actions to add event data?
+				--	Probably need to build the system out more first; UI rework timeline likely
+				local rActionEventData = rActionDefinition.fAction(rAction.rData, rEventData) or {};
+				if rActionEventData.bIsInterruption then
+					rActionEventData.rTrigger = rTrigger;
+					rActionEventData.rAction = rAction;
+					return rActionEventData;
+				end
+				if not checkConditions(rAction.aConditions, rActionEventData) then
+					return;
+				end
 			end
 		end
+		bShouldInvoke = bShouldInvoke or rAction == rInterruptedAction;
 	end
 end
 
-function fireInterruptions(sEventName, rEventData, aInterruptions)
-	if #aInterruptions == 0 then
+function fireInterruption(sEventName, rEventData, rInterruption)
+	if not rInterruption then
 		return;
 	end
 
+	local sInterruptionKey = generateInterruptionKey();
 	local rEventDefinition = getEventDefinition(sEventName)
-	local sInterruptionKey = ""; -- TODO generate unique key from event
-	local rInterruptedEvent = beginTrackingInterruptedEvent(sInterruptionKey, rEventDefinition, rEventData)
+	local rInterruptedEvent = beginTrackingInterruptedEvent(sInterruptionKey, rEventDefinition, rEventData, rInterruption);
 
-	for _,rInterruptionData in ipairs(aInterruptions) do
-		table.insert(rInterruptedEvent.aInterruptedTriggers, {
-			rTrigger = rInterruptionData.rTrigger,
-			nActionIndex = rInterruptionData.nActionIndex
-		});
-		rInterruptedEvent.nTriggerCount = rInterruptedEvent.nTriggerCount + 1;
-	end
-
-	for _,rInterruptionData in ipairs(aInterruptions) do
-		rInterruptionData.rInterruption.fAction(sInterruptionKey, rInterruptionData.rInterruption.rData);
-	end
+	rInterruptedEvent.nPendingInterruptions = rInterruption.fAction(sInterruptionKey, rInterruption.rData, rEventData) or 1;
 end
 
-function beginTrackingInterruptedEvent(sInterruptionKey, rEventDefinition, rEventData)
+local nKeyCounter = 0;
+function generateInterruptionKey()
+	local sDecoration = "";
+	if Session.IsHost then
+		sDecoration = "(Host)";
+	end
+	nKeyCounter = nKeyCounter + 1;
+	return string.format("%s%s: %d", Session.UserName, sDecoration, nKeyCounter);
+end
+
+function beginTrackingInterruptedEvent(sInterruptionKey, rEventDefinition, rEventData, rInterruption)
 	local rInterruptedEvent = {
 		rEventDefinition = rEventDefinition,
 		rEventData = rEventData,
-		nTriggerCount = 0,
-		aInterruptedTriggers = {}
+		rInterruption = rInterruption
 	};
 	tInterruptedEvents[sInterruptionKey] = rInterruptedEvent;
 
 	nInterruptedEvents = nInterruptedEvents + 1;
-	if nInterruptedEvents > 100 then
+	while nInterruptedEvents > 100 do
 		-- TODO configurable count?
 		dropOldestEvent();
 	end
@@ -332,7 +379,6 @@ function beginTrackingInterruptedEvent(sInterruptionKey, rEventDefinition, rEven
 	return rInterruptedEvent;
 end
 
--- TODO maybe this logic can be consolidated for use with flags as well?
 function dropOldestEvent()
 	local nEarliest = math.huge;
 	local sEarliest;
@@ -348,14 +394,28 @@ function dropOldestEvent()
 	end
 end
 
-function endTriggerInterruption(sInterruptionKey)
+function notifyEndTriggerInterruption(sInterruptionKey, msgOOB)
+	msgOOB.type = OOB_MSGTYPE_END_INTERRUPTION;
+	msgOOB.sInterruptionKey = sInterruptionKey;
+	-- Send to all clients since the interruption will only be stored for the originator.
+	Comm.deliverOOBMessage(msgOOB);
+end
+
+function handleEndTriggerInterruption(msgOOB)
+	endTriggerInterruption(msgOOB.sInterruptionKey, msgOOB)
+end
+
+function endTriggerInterruption(sInterruptionKey, msgOOB)
 	local rInterruptedEvent = tInterruptedEvents[sInterruptionKey];
 	if not rInterruptedEvent then
 		return;
 	end
 
-	rInterruptedEvent.nTriggerCount = rInterruptedEvent.nTriggerCount - 1;
-	if rInterruptedEvent.nTriggerCount == 0 then
+	rInterruptedEvent.nPendingInterruptions = rInterruptedEvent.nPendingInterruptions - 1;
+	if rInterruptedEvent.nPendingInterruptions <= 0 then
+		-- TODO if ever using multiple interruptions from a single action, figure out event data on resume.
+		local rActionDefinition = tActionDefinitions[rInterruptedEvent.rInterruption.rAction.sName];
+		rInterruptedEvent.rInterruption.rActionEventData = rActionDefinition.fDecodeEventOOB(msgOOB);
 		resumeEvent(sInterruptionKey, rInterruptedEvent);
 	end
 end
@@ -364,8 +424,5 @@ function resumeEvent(sInterruptionKey, rInterruptedEvent)
 	tInterruptedEvents[sInterruptionKey] = nil;
 	nInterruptedEvents = nInterruptedEvents - 1;
 
-	rInterruptedEvent.rEventDefinition.fResume(rInterruptedEvent.rEventData);
-	--TODO how to deal with trigger and index data?
-	--	best to avoid stateful globals where possible and maintain an execution chain.
-	--	perhaps optional variables that get passed on through to fireEvent?
+	rInterruptedEvent.rEventDefinition.fResume(rInterruptedEvent.rEventData, rInterruptedEvent.rInterruption);
 end
