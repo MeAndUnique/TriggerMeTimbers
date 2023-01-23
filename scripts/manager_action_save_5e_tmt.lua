@@ -98,7 +98,7 @@ function onSave(rSource, rTarget, rRoll)
 	local sInterruptionKey;
 	local bAutoFail = rRoll.sDesc:match("%[AUTOFAIL%]");
 	if bAutoFail or not rRoll.nTarget then
-		sInterruptionKey = rRoll.sSaveDesc:match("%[INTERRUPTION: ([^%]]+)");
+		sInterruptionKey = (rRoll.sSaveDesc or ""):match("%[INTERRUPTION: ([^%]]+)");
 	end
 
 	onSaveOriginal(rSource, rTarget, rRoll);
@@ -116,7 +116,7 @@ function onSave(rSource, rTarget, rRoll)
 end
 
 function applySave(rSource, rOrigin, rAction, sUser)
-	local sInterruptionKey = rAction.sSaveDesc:match("%[INTERRUPTION: ([^%]]+)");
+	local sInterruptionKey = (rAction.sSaveDesc or ""):match("%[INTERRUPTION: ([^%]]+)");
 	if sInterruptionKey then
 		rAction.sSaveDesc:gsub("%[INTERRUPTION: [%]]+%]", "");
 	end
@@ -155,13 +155,7 @@ function prepareRollSave(rTriggerData, _)
 end
 
 function rollSave(sInterruptionKey, rInterruptionData, rEventData)
-	local rActor;
-	if rInterruptionData.sCombatant == "source_subject" then
-		rActor = rEventData.rSource;
-	elseif rInterruptionData.sCombatant == "target_subject" then
-		rActor = rEventData.rTarget;
-	end
-
+	local rActor = TriggerData.resolveCombatant(rInterruptionData, rEventData);
 	local nTarget;
 	if rInterruptionData.sTargetType == "number" then
 		nTarget = rInterruptionData.nTarget;

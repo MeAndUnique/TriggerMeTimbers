@@ -43,13 +43,6 @@ function initializeActions()
 end
 
 function applyHpToCombatant(rTriggerData, rEventData)
-	local rActor = nil;
-	if rTriggerData.sCombatant == "source_subject" then
-		rActor = rEventData.rSource;
-	elseif rTriggerData.sCombatant == "target_subject" then
-		rActor = rEventData.rTarget;
-	end
-
 	local rAction = {};
 	rAction.type = "heal";
 	rAction.name = rTriggerData.sLabel or "";
@@ -72,5 +65,6 @@ function applyHpToCombatant(rTriggerData, rEventData)
 
 	table.insert(rAction.clauses, rHealClause);
 
+	local rActor = TriggerData.resolveCombatant(rTriggerData, rEventData);
 	ActionHeal.performRoll(nil, rActor, rAction)
 end

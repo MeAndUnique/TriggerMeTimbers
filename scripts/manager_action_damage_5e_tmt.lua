@@ -307,13 +307,8 @@ function targetHasCurrentHitpoints(rTriggerData, rEventData)
 end
 
 function combatantHasTemporaryHitpoints(rTriggerData, rEventData)
-	local nTemporary;
-	if rTriggerData.sCombatant == "source_subject" then
-		nTemporary = getTemporaryHitPoints(rEventData.rSource);
-	elseif rTriggerData.sCombatant == "target_subject" then
-		nTemporary = getTemporaryHitPoints(rEventData.rTarget);
-	end
-
+	local rCombatant = TriggerData.resolveCombatant(rTriggerData, rEventData);
+	local nTemporary = getTemporaryHitPoints(rCombatant);
 	return TriggerData.resolveComparison(nTemporary, rTriggerData.nCompareAgainst, rTriggerData.sComparison);
 end
 

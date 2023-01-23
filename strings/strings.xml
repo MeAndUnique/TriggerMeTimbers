@@ -11,6 +11,8 @@
 	<string name="library_recordtype_label_trigger">Triggers</string>
 	<string name="library_recordtype_empty_trigger">&#171; New Trigger &#187;</string>
 
+	<string name="dialog_confirm_title">Confirm</string>
+
 	<string name="triggers_window_title">Triggers</string>
 	<string name="sidebar_tooltip_active_triggers">Active Triggers</string>
 	<string name="sidebar_tooltip_triggers">Triggers</string>
@@ -43,6 +45,8 @@
 	<string name="damage_value_condition_description">Does the damage consist of a certain type?</string>
 	<string name="is_source_condition">Is Source</string>
 	<string name="is_target_condition">Is Target</string>
+	<string name="reaaction_available_condition">Combatant Reaction Available</string>
+	<string name="reaaction_available_condition_description">Does the combatant have an available reaction to use currently?</string>
 	<string name="roll_is_type_condition">Roll Is Type</string>
 	<string name="roll_is_value_condition">Roll Is Value</string>
 	<string name="target_has_current_hit_points_condition">Target Has Current Hit Points</string>
@@ -54,6 +58,8 @@
 	<string name="replace_dice_action">Replace Dice</string>
 	<string name="reroll_dice_action">Reroll Dice</string>
 	<string name="send_chat_message_action">Send Chat Message</string>
+	<string name="use_reaction_action">Use Reaction</string>
+	<string name="use_reaction_action_description">Uses the combatant's reaction for the current round.</string>
 
 	<!-- Parameters -->
 	<string name="chat_message_parameter">Chat Message</string>

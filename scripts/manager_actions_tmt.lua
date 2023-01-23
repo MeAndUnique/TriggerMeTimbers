@@ -3,10 +3,7 @@
 -- attribution and copyright information.
 --
 
-rDiceRolledEvent = {
-	sName = "dice_rolled_event",
-	aParameters = {"rSource", "rTarget", "rRoll"}
-};
+rDiceRolledEvent = nil;
 
 rRollIsTypeCondition = nil;
 rRollValueCondition = nil;
@@ -20,10 +17,19 @@ function onInit()
 	resolveActionOriginal = ActionsManager.resolveAction;
 	ActionsManager.resolveAction = resolveAction;
 
-	TriggerManager.defineEvent(rDiceRolledEvent);
-
+	initializeEvents();
 	initializeConditions();
 	initializeActions();
+end
+
+function initializeEvents()
+	rDiceRolledEvent = {
+		sName = "dice_rolled_event",
+		aParameters = {"rSource", "rTarget", "rRoll", "bInterruptable"},
+		fResume = resumeResolveAction
+	};
+
+	TriggerManager.defineEvent(rDiceRolledEvent);
 end
 
 function initializeConditions()
@@ -141,10 +147,18 @@ function initializeActions()
 	TriggerManager.defineAction(rReplaceDiceAction);
 end
 
-function resolveAction(rSource, rTarget, rRoll)
+function resolveAction(rSource, rTarget, rRoll, rPendingInterruption)
 	local rEventData = {rSource=rSource, rTarget=rTarget, rRoll=rRoll};
-	TriggerManager.fireEvent(rDiceRolledEvent.sName, rEventData);
-	return resolveActionOriginal(rSource, rTarget, rRoll);
+	local rInterruption = TriggerManager.fireEvent(rDiceRolledEvent.sName, rEventData, rPendingInterruption);
+	if rInterruption then
+		TriggerManager.fireInterruption(rDiceRolledEvent.sName, rEventData, rInterruption);
+	else
+		resolveActionOriginal(rSource, rTarget, rRoll);
+	end
+end
+
+function resumeResolveAction(rEventData, rInterruption)
+	resolveAction(rEventData.rSource, rEventData.rTarget, rEventData.rRoll, rInterruption);
 end
 
 function rollIsType(rTriggerData, rEventData)
