@@ -83,10 +83,9 @@ function initializeConditions()
 end
 
 function creatureHasTraitCondition(rTriggerData, rEventData)
-	if rTriggerData.sCombatant == "source_subject" then
-		return hasTrait(rEventData.rSource, rTriggerData.sType, rTriggerData.sTraitName);
-	elseif rTriggerData.sCombatant == "target_subject" then
-		return hasTrait(rEventData.rTarget, rTriggerData.sType, rTriggerData.sTraitName);
+	local rCombatant = TriggerData.resolveCombatant(rTriggerData, rEventData);
+	if rCombatant then
+		return hasTrait(rCombatant, rTriggerData.sType, rTriggerData.sTraitName);
 	end
 
 	return false;

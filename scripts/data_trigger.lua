@@ -102,3 +102,13 @@ end
 function isTarget(rTriggerData, rEventData)
 	return rEventData.rTarget and rTriggerData.sTargetPath == rEventData.rTarget.sCreatureNode;
 end
+
+function resolveCombatant(rTriggerData, rEventData)
+	local rCombatant;
+	if rTriggerData.sCombatant == "source_subject" then
+		rCombatant = rEventData.rSource;
+	elseif rTriggerData.sCombatant == "target_subject" then
+		rCombatant = rEventData.rTarget;
+	end
+	return rCombatant;
+end

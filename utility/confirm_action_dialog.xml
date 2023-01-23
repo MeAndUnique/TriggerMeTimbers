@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+	Please see the license.html file included with this distribution for
+	attribution and copyright information.
+-->
+
+<root>
+	<!-- TODO use optional on close function for ending interruptions -->
+	<windowclass name="confirm_action_dialog">
+		<script file="utility/scripts/confirm_action_dialog.lua" />
+		<sheetdata>
+			<windowtitlebar name="title">
+				<resource>dialog_confirm_title</resource>
+			</windowtitlebar>
+			<anchor_title_utilitybox3 name="contentanchor" />
+			
+			<anchor_bottom_utilitybox3 name="bottomanchor" />
+			
+			<button_dialog_ok name="button_ok">
+				<anchored to="bottomanchor" position="insidetopright" offset="40,-5" />
+			</button_dialog_ok>
+			<button_dialog_cancel name="button_cancel">
+				<anchored to="bottomanchor" position="insidetopright" offset="5,-5" />
+			</button_dialog_cancel>
+			
+			<close_utilitybox3 />
+		</sheetdata>
+	</windowclass>
+</root>

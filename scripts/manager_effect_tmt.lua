@@ -47,19 +47,11 @@ function initializeActions()
 end
 
 function combatantHasEffectCondition(rTriggerData, rEventData)
-	if rTriggerData.sCombatant == "source_subject" then
-		return EffectManager.hasEffect(rEventData.rSource, rTriggerData.sEffectName);
-	elseif rTriggerData.sCombatant == "target_subject" then
-		return EffectManager.hasEffect(rEventData.rTarget, rTriggerData.sEffectName);
-	end
-
-	return false;
+	local rCombatant = TriggerData.resolveCombatant(rTriggerData, rEventData);
+	return EffectManager.hasEffect(rCombatant, rTriggerData.sEffectName);
 end
 
 function removeCombatantEffect(rTriggerData, rEventData)
-	if rTriggerData.sCombatant == "source_subject" then
-		EffectManager.removeEffect(ActorManager.getCTNode(rEventData.rSource), rTriggerData.sEffectName);
-	elseif rTriggerData.sCombatant == "target_subject" then
-		EffectManager.removeEffect(ActorManager.getCTNode(rEventData.rTarget), rTriggerData.sEffectName);
-	end
+	local rCombatant = TriggerData.resolveCombatant(rTriggerData, rEventData);
+	EffectManager.removeEffect(ActorManager.getCTNode(rCombatant), rTriggerData.sEffectName);
 end
