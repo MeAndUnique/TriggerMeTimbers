@@ -60,7 +60,7 @@ function attackMatchesResultCondition(rTriggerData, rEventData)
 	elseif rTriggerData.sAttackResult == "attack_result_property_miss" then
 		return (rEventData.rRoll.sResult == "miss") or (rEventData.rRoll.sResult == "fumble");
 	elseif rTriggerData.sAttackResult == "attack_result_property_fumble" then
-		return rEventData.rRoll.sResult == "miss";
+		return rEventData.rRoll.sResult == "fumble";
 	end
 
 	return false;
