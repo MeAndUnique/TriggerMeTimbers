@@ -78,6 +78,10 @@ function initializeActions()
 					{
 						sValue = "half_damage_parameter",
 						aRequiredParameters = {"nDamage"},
+					},
+					{
+						sValue = "damage_plus_five_paramter",
+						aRequiredParameters = {"nDamage"},
 					}
 				},
 			},
@@ -161,6 +165,8 @@ function rollSave(sInterruptionKey, rInterruptionData, rEventData)
 		nTarget = rInterruptionData.nTarget;
 	elseif rInterruptionData.sTargetType == "half_damage_parameter" then
 		nTarget = math.floor(math.max(10, rEventData.nDamage / 2));
+	elseif rInterruptionData.sTargetType == "damage_plus_five_parameter" then
+		nTarget = rEventData.nDamage + 5;
 	end
 
 	ActionSave.performVsRoll(nil, rActor, rInterruptionData.sAbility, nTarget, false, nil, false, "[INTERRUPTION: " .. sInterruptionKey .. "]");

@@ -167,4 +167,5 @@
 	<string name="save_target_type_parameter">DC Calculation</string>
 	<string name="save_target_parameter">Save DC</string>
 	<string name="half_damage_parameter">Half of Damage or 10</string>
+	<string name="damage_plus_five_parameter">Damage plus 5</string>
 </root>

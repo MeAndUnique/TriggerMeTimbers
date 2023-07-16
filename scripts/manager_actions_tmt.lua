@@ -234,7 +234,7 @@ function changeDice(rTriggerData, rEventData, sDisplay, fGetResult)
 		end
 	end
 
-	for nIndex,rDie in ipairs(rEventData.rRoll.aDice) do
+	for nIndex,rDie in ipairs(rEventData.rRoll.aDice or {}) do
 		if not rDie.dropped then
 			if fSelect then
 				fSelect(rDie.result, nIndex);
